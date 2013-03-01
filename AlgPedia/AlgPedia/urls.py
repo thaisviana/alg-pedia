@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, include, url
-from algorithm.views import showMainPage
+from algorithm.views import showMainPage, syncDatabase
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -9,6 +9,7 @@ urlpatterns = patterns('',
     # Examples:
 
 	url(r'^$', showMainPage),
+	url(r'^sync/$', syncDatabase),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
