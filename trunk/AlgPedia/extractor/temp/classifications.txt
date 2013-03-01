@@ -1,0 +1,47 @@
+Algorithm Description Languages
+Algorithms On Strings
+Approximation Algorithms
+Arbitrary Precision Algorithms
+Bioinformatics Algorithms
+Calendar Algorithms
+Checksum Algorithms
+Classification Algorithms
+Combinatorial Algorithms
+Compression Algorithms
+Computational Group Theory
+Computational Number Theory
+Computational Physics
+Computational Statistics
+Computer Algebra
+Concurrent Algorithms
+Cryptographic Algorithms
+Data Clustering Algorithms
+Data Mining
+Database Algorithms
+Digital Signal Processing
+Distributed Algorithms
+Error Detection And Correction
+Evolutionary Algorithms
+External Memory Algorithms
+Geometric Algorithms
+Heuristic Algorithms
+Machine Learning Algorithms
+Memory Management Algorithms
+Networking Algorithms
+Online Algorithms
+Optimization Algorithms And Methods
+Pattern Matching
+Pseudo-Polynomial Time Algorithms
+Pseudorandom Number Generators
+Quantum Algorithms
+Randomized Algorithms
+Recursion
+Root-Finding Algorithms
+Routing Algorithms
+Scheduling Algorithms
+Search Algorithms
+Selection Algorithms
+Sorting Algorithms
+Statistical Algorithms
+Stochastic Algorithms
+Unicode Algorithms
