@@ -14,6 +14,7 @@ urlpatterns = patterns('',
 	url(r'^clearDB/$', clear_database),
 	url(r'^show/cat/all$', show_all_classifications),
 	url(r'^show/cat/id/(\d+)', show_classification_by_id), 
+	url(r'^add/cat/id/(\d+)', add_by_category), 
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
