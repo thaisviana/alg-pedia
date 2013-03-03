@@ -57,3 +57,11 @@ def show_classification_by_id(request, id):
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
+	
+def add_by_category(request, id):		
+	
+	t = get_template('add_form.html')
+	ctx = Context({'classif' : classification})
+	html = t.render(ctx)
+			
+	return HttpResponse(html)
