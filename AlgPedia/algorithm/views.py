@@ -9,9 +9,11 @@ from algorithm.controllers import *
 #get_all_classifications_name_link, wipe_database, is_database_empty, get_classification_by_id
 from extractor.Bootstrapping import Bootstrapper
 
-def show_main_page(request):
-	html = "<html> Main Page </html>"
-	
+def show_main_page(request):	
+	t = get_template('default_debug.html')
+	ctx = Context({'message' : 'Main Page'})
+	html = t.render(ctx)
+			
 	return HttpResponse(html)
 
 def sync_database(request):
@@ -59,6 +61,7 @@ def show_classification_by_id(request, id):
 	return HttpResponse(html)
 	
 def add_by_category(request, id):		
+	classification = get_classification_by_id(int(id))
 	
 	t = get_template('add_form.html')
 	ctx = Context({'classif' : classification})
