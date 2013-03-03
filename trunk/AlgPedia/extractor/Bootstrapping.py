@@ -14,7 +14,6 @@ class Bootstrapper():
 	def __init__(self):
 		pass
 	
-	
 	def doDatabaseImporting(self):
 		query_fetcher = QueryFetcher('csv')
 		dbpedia_master_query = '''select * where{
@@ -46,7 +45,6 @@ class Bootstrapper():
 			aux_classification = Classification(name=classification['name'], uri=classification['uris'])
 			aux_classification.save()
 		
-		
 	def extract_names(self, classif_list):
 
 		beautiful_names = dict()
@@ -61,6 +59,7 @@ class Bootstrapper():
 				beautiful_names[names[i]] = classif_list[i]	
 		return (beautiful_names.keys(), beautiful_names.values())		
 	
+	# deprecated!!
 	def insertClassifications(self, filename, col_number):
 	
 		col_extractor = ColumnExtractor(filename)
@@ -78,6 +77,7 @@ class Bootstrapper():
 			aux_classification = Classification(name=key, uri=val)
 			aux_classification.save()
 	
+	# deprecated!!
 	# returns a list of beautiful names.	
 	# each name only appears once in this list.
 	def extractNames(self, classif_list):

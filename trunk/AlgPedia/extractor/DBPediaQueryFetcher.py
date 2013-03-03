@@ -34,20 +34,22 @@ class QueryFetcher:
 	# appropriate instance of FileWriter
     def fetchResult(self, query_string):
         
-        self.get_params['query'] = query_string
-        
-        query_url = self.base_url + '?' + urllib.urlencode(self.get_params)
-        
-        opener = urllib2.build_opener()
-        opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-        response = opener.open(query_url)
-        the_page = response.read()
-        
-        file_path = self.file_writer.writeFile(the_page, 'dbpedia_fetch_%d' % self.n_fetch)
-        
-        self.n_fetch += 1;
-        
-        return file_path
+		self.get_params['query'] = query_string
+
+		query_url = self.base_url + '?' + urllib.urlencode(self.get_params)
+
+		data = urllib.urlencode(self.get_params)
+		headers = {'User-Agent' : 'Mozilla/5.0'}
+		request = urllib2.Request(self.base_url,data, headers)
+		response = urllib2.urlopen(request)
+
+		the_page = response.read()
+
+		file_path = self.file_writer.writeFile(the_page, 'dbpedia_fetch_%d' % self.n_fetch)
+
+		self.n_fetch += 1;
+
+		return file_path
     
     # change the output path of the fetched resource
     def changeOutputFolder(self, new_folder_path):
