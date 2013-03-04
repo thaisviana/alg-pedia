@@ -51,6 +51,26 @@ def show_all_classifications(request):
 			
 	return HttpResponse(html)
 
+def show_all_algorithms(request):
+	algorithms = get_all_algorithms()
+	
+	t = get_template('display_all_algorithms.html')
+	
+	ctx_variables = {}
+	
+	algs = [ (alg.get_show_url(), alg.name) for alg in algorithms]
+	
+	
+	algorithms = [{'link' : a[0], 'name' : a[1]} for a in algs]
+	
+	ctx_variables['algorithms'] = algorithms
+	
+	ctx = Context(ctx_variables)
+	
+	html = t.render(ctx)
+	
+	return HttpResponse(html)
+	
 def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
@@ -63,8 +83,13 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['algorithm_name'] = alg.name
 	ctx_variables['algorithm_classification'] = classification.name
 	ctx_variables['algorithm_about'] = alg.description
-	ctx_variables['classification_algp_url'] = make_classification_link(classification.id)
+	ctx_variables['classification_algp_url'] = classification.get_show_url() 
+	#make_classification_link(classification.id)
 	ctx_variables['classification_dbp_url'] = classification.uri
+	
+	implementations = get_implementations_by_alg_id(int(id))
+	
+	ctx_variables['implementations'] = implementations
 	
 	ctx = Context(ctx_variables)
 	
@@ -77,7 +102,7 @@ def show_classification_by_id(request, id):
 	
 	algs = get_algorithms_by_classification(classification)
 	
-	alg_display_url = get_alg_display_url()
+	alg_display_url = get_algorithm_display_url()
 	
 	
 	ids = map(lambda alg: alg.id, algs)

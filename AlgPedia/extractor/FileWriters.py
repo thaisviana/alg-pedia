@@ -131,6 +131,48 @@ class XMLWriter(FileWriter):
 class JSONWriter(FileWriter):
     def __init__(self, params):
         pass
+
+# testar
+class RDFWriter(FileWriter):
+	def __init__(self, algorithm, implementations):
+		self.algorithm = algorithm
+		self.RDF_variables = {'ALG_NAME': '', 'ALG_URI': '', 'CAT_NAME': '', 'CAT_URI': '', 'IMPLEMENTATION_URIS' : []}
+	
+	def generate_RDF_text(self):
+		path = os.path.join(os.path.dirname(__file__), '../algorithm/rdf/rdf_modelo.xml').replace('/','\\')
+		
+		self.RDF_variables['ALG_NAME'] = algorithm.name 
+		self.RDF_variables['ALG_URI'] =  algorithm.get_show_url()
+		self.RDF_variables['CAT_NAME'] = algorithm.classification.name
+		self.RDF_variables['CAT_URI'] = algorithm.classification.get_show_url()
+		
+		for implementation in implementations:
+			self.RDF_variables['IMPLEMENTATION_URI'].append(implementation.get_show_url())
+		
+		alg_rdf_text = self.replace_vars_in_template(self.RDF_variables)
+		
+		print alg_rdf_text
+		return alg_rdf_text
+		
+	def replace_vars_in_template(self, variables):
+		template_path = os.path.join(os.path.dirname(__file__), '../algorithm/rdf/rdf_modelo.xml').replace('/','\\')
+		
+		rdf_template = open(template_path)
+		lines = rdf_model.readlines()
+		rdf_template.close()
+		
+		text = '\n'.join(lines)
+		
+		implementation_uri_template = "<algpedia-owl:implementation rdf:resource=\"IMPLEMENTATION_URI\" />"
+		
+		variables['IMPLEMENTATION_URIS'] = map(lambda uri: "<algpedia-owl:implementation rdf:resource=" + URI + " />", variables['IMPLEMENTATION_URIS'])
+		
+		variables['IMPLEMENTATION_URIS'] = '\n'.join(variables['IMPLEMENTATION_URIS'])
+		
+		for variable, value in variables.iteritems():
+			text.replace(variable, value)
+		
+		return text
 		
 # HTMLToXXX converter Classes
 class HTMLToCSV:
@@ -145,7 +187,7 @@ class HTMLToCSV:
             aux = list()
             for col in row.findAll('td'):
                 aux.append(col.string)
-            line = ','.join(aux)
+            line = ';'.join(aux)
             if(line != ''):
 				converted.append(line.encode(encoding='UTF-8'))
 
