@@ -6,10 +6,10 @@ Created on 01/03/2013
 
 import os
 from extractor.FileWriters import TXTWriter
-from extractor.Extractor import ColumnExtractor
+from extractor.Extractor import CSVColumnExtractor
 from extractor.DBPediaQueryFetcher import QueryFetcher
 from algorithm.models import Classification
-from algorithm.controllers import insert_classification_db, insert_algorithm_db
+from algorithm.controllers import *
 
 from extractor.WikiPediaExtractors import WikiPediaAbstractExtractor
 
@@ -36,13 +36,16 @@ class Bootstrapper():
 		
 	# second parameter is a list of columns that will be used to populate the database
 	def populate_database(self, filename, cols):
-		col_extractor = ColumnExtractor(filename)
+		col_extractor = CSVColumnExtractor(filename)
 		
 		class_alg_mapping = zip(col_extractor.extract_column(cols[0]), col_extractor.extract_column(cols[1]))
 		
 		for mapping in class_alg_mapping:
+			#print mapping[0]
+			#if mapping[0].split(':')[-1] == 'Sorting_algorithms':
 			classif = self.insert_classification(mapping[0])
-			alg = self.insert_algorithm(mapping[1], classif)
+			#alg = self.insert_algorithm(mapping[1], classif)
+			alg = self.insert_algorithm_conditional(mapping[1], classif)
 		
 	def insert_classification(self, classif_url):
 		(name, uri) = self.extract_name_uri(classif_url)
@@ -51,16 +54,78 @@ class Bootstrapper():
 		classif = insert_classification_db(name, uri)
 
 		return classif
-	
+		
+	def insert_algorithm_conditional(self, alg_url, classif):
+		try:
+			wiki_alg_extractor = WikiPediaAbstractExtractor()
+			
+			wiki_alg_extractor.search_page(alg_url)
+			
+			about = wiki_alg_extractor.get_alg_about()
+			
+			name = wiki_alg_extractor.get_alg_name()
+			
+			# returns a tuple (language, implementation_source)
+			en_implementations = wiki_alg_extractor.get_alg_pseudo_code()
+			
+			# returns a tuple (language, implementation_source)
+			implementations = wiki_alg_extractor.get_alg_implementations()
+			
+			if not en_implementations and not implementations:
+				# this covers having neither a PT page nor a pseudocode	
+				print "No implementation or pseudo for this algorithm.\n"
+				return None
+				
+			alg = insert_algorithm_db(name, about, classif)	
+			
+			if en_implementations:
+				for en_implementation in en_implementations:
+					implementation = insert_implementation_db(alg, en_implementation[0], en_implementation[1])
+					
+			if implementations:
+				for implementation in implementations:
+					implementation = insert_implementation_db(alg,  implementation[0], implementation[1])			
+					
+			#will never be returned
+			return None 
+		except Exception, e:
+			print e
+			return None
+			
 	def insert_algorithm(self, alg_url, classif):
 		try:
 			wiki_alg_extractor = WikiPediaAbstractExtractor()
+			
 			wiki_alg_extractor.search_page(alg_url)
+			
 			about = wiki_alg_extractor.get_alg_about()
+			
 			name = wiki_alg_extractor.get_alg_name()
-		
+			
 			alg = insert_algorithm_db(name, about, classif)
-			return alg
+			
+			# returns a tuple (language, implementation_source)
+			pseudos = wiki_alg_extractor.get_pseudo_code()
+			
+			# returns a tuple (language, implementation_source)
+			implementations = wiki_alg_extractor.get_alg_implementations()
+			
+			# deletes the added alg if it 
+			if not pseudos and not implementations:
+				# this covers having neither a PT page nor a pseudocode
+				delete_algorithm_db(alg)
+				return None
+				
+			if pseudo:
+				for pseudo in pseudos:
+					implementation = insert_implementation_db(alg, pseudo[0], pseudo[1])
+					
+			if implementations:
+				for implementation in implementations:
+					implementation = insert_implementation_db(alg,  implementation[0], implementation[1])			
+					
+			#will never be returned
+			return None 
 		except Exception, e:
 			print e
 			return None

@@ -1,4 +1,4 @@
-class ColumnExtractor:
+class CSVColumnExtractor:
 	def __init__(self, file_name):
 		self.file_name = file_name
 		
@@ -9,6 +9,6 @@ class ColumnExtractor:
 		
 		F_H.close()
 		
-		column = map(lambda x: x.split(',')[column_index], lines)
+		column = map(lambda x: x.split(';')[column_index], lines)
 		
 		return column

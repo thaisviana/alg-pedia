@@ -44,25 +44,19 @@
 			</div>
 			&nbsp;&nbsp;&nbsp;
 			<div class="span10 alert alert-info">
-				<h4> {{ classif.name }} </h4>
-		<div id="classification">
-			<p> For more information click <a href="{{ classif.uri }}" target="_blank">here</a> </p>
-			
-			
-			<!-- table containing algorithms with such classification -->
-			<form id="add_algorithm" target="localhost:8000/add/cat/id/{{classif.id}}">
-				<input type="submit" value="Inserir Algoritmo" />
-				
-				<table id="algorithms">
-					{% for alg in algorithms %}
+				<div id="classifications">
+			<table id="classifications_uri">
+							
+									
+				{% for algorithm in algorithms %}	
 					<tr>
-							<td><a href="{{alg.link}}"> {{ alg.name }} </td>
-						</tr>
-					{% empty %}
-						<p> There are no Algorithms with this Classification. </p>
-					{% endfor %}
-				</table>
-			</form>
+						<td><a href="{{algorithm.link}}"> {{ algorithm.name }} </td>
+					</tr>
+				{% empty %}
+					<p> There are no algorithms available. </p>
+				{% endfor %}
+				
+			</table>
 		</div>
 			</div>
 		</div>

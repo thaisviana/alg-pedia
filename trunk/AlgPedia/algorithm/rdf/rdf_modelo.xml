@@ -12,6 +12,6 @@
     <rdfs:comment xml:lang="en">ALG_ABOUT</rdfs:comment>
     <algpedia-owl:classification rdf:resource="CLASSIFICATION_URI" />
 	<dbpedia-owl:category rdf:resource="DBPEDIA_CLASIFICATION_URI" />
-	<algpedia-owl:implementation rdf:resource="IMPLEMENTATION_URI" />
+	IMPLEMENTATION_URIS
   </rdf:Description>
 </rdf:RDF>
