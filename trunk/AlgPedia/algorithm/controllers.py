@@ -39,3 +39,51 @@ def get_all_classifications_name_link():
 # returns a	classification object
 def get_classification_by_id(c_id):
 	return Classification.objects.get(id=c_id)
+
+def get_algorithms_by_classification(a_classification):
+
+	try:
+		algs = Algorithm.objects.filter(classification=a_classification)
+		return algs
+	except Algorithm.DoesNotExist:
+		return []
+		
+def insert_classification_db(c_name, c_uri):
+	try:
+		classif = Classification.objects.get(name=c_name)
+		return classif
+	except Classification.DoesNotExist:
+		aux = Classification(name=c_name,  uri=c_uri)
+		aux.save()
+		return aux		
+		
+def insert_algorithm_db(a_name, a_about, a_classif):
+	try:
+		alg = Algorithm.objects.get(name=a_name)
+		return alg
+	except Algorithm.DoesNotExist:
+		aux = Algorithm(name=a_name, description=a_about, classification=a_classif)
+		aux.save()
+		return aux
+		
+		
+def get_algorithm_by_id(a_id):
+	try:
+		alg = Algorithm.objects.get(id=a_id)
+		return alg
+	except Algorithm.DoesNotExist:
+		return None
+		
+def make_classification_link(c_id):
+	base_link = get_classification_display_url()
+	return base_link.replace("#", c_id)
+
+def make_algorithm_link(a_id):
+	base_link = get_algorithm_display_url()
+	return base_link.replace("#", c_id)
+
+def get_classification_display_url():
+	return "http://localhost:8000/show/cat/id/#"
+	
+def get_algorithm_display_url():
+	return "http://localhost:8000/show/alg/id/#"
