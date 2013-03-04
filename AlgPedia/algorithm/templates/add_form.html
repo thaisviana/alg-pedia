@@ -7,6 +7,11 @@
 <script
 	src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"
 	type="text/javascript"></script>
+<link rel="stylesheet"
+	href="./algorithm/static/css/bootstrap-wysihtml5.css" />
+<script
+	src="./algorithm/static/js/bootstrap-wysihtml5.js"
+	type="text/javascript"></script>
 
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 <title>AlgPedia</title>
@@ -59,12 +64,18 @@
 								class="checkbox inline"> <input type="checkbox"
 								id="Unknown" value=""> Unknown</label>
 						</div>
-					</div>
+						&nbsp;&nbsp;&nbsp;
 					<div class="control-group">
-						<label class="control-label" for="inputAlgorithm">Algorithm
-							:</label>
+						<div class='btn-group'>
+							<a class="btn" href="#"><i class="icon-indent-right"></i></a>
+							<a class="btn" href="#"><i class="icon-indent-left"></i></a>
+							<a class="btn" href="#"><i class="icon-bold"></i></a>
+							<a class="btn" href="#"><i class="icon-italic"></i></a>
+						</div>
+						<label class="control-label" for="inputAlgorithm">Algorithm:</label>
+						
 						<div class="controls">
-							<textarea rows="7" id="inputAlgorithm"></textarea>
+							<textarea class="textarea" style="width: 810px; height: 200px"></textarea>
 						</div>
 					</div>
 					<button class="btn btn-large btn-block" type="button" id="add">Add
@@ -78,8 +89,18 @@
 
 <script>
 	$(function() {
+		$('.textarea').wysihtml5();
 		$("#inputAuthor").attr("readonly", true);
 		$("#Unknown").attr("checked", true);
+		$('.textarea').wysihtml5({
+			"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
+			"emphasis": true, //Italics, bold, etc. Default true
+			"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
+			"html": false, //Button which allows you to edit the generated HTML. Default false
+			"link": true, //Button to insert a link. Default true
+			"image": true, //Button to insert an image. Default true,
+			"color": false //Button to change color of font  
+		});
 
 		$("#Unknown").click(function() {
 			if ($('#Unknown').attr('checked')) {
