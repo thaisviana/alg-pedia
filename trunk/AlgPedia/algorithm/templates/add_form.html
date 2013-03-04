@@ -83,6 +83,7 @@
 
 		$("#Unknown").click(function() {
 			if ($('#Unknown').attr('checked')) {
+				$("#inputAuthor").val("");
 				$("#inputAuthor").attr("readonly", true);
 				$("#Unknown").attr("checked", true);
 			} else {
