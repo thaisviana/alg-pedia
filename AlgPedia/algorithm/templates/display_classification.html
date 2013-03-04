@@ -47,6 +47,13 @@
 			
 			<!-- table containing algorithms with such classification -->
 			<table id="algorithms">
+				{% for alg in algorithms %}
+				<tr>
+						<td><a href="{{alg.link}}"> {{ alg.name }} </td>
+					</tr>
+				{% empty %}
+					<p> There are no Algorithms with this Classification. </p>
+				{% endfor %}
 			</table>
 		</div>
 			</div>

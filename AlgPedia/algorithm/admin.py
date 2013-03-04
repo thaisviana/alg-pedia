@@ -4,9 +4,13 @@ from algorithm.models import Author, ProgrammingLanguage, Classification, Algori
 class ClassificationAdmin(admin.ModelAdmin):
 	list_display = ('name', 'uri')
 	search_fields = ('name',)
+	
+class AlgorithmAdmin(admin.ModelAdmin):
+	list_display = ('name', 'description', 'classification')
+	search_fields = ('name', 'classification')
 
 admin.site.register(Author)
 admin.site.register(ProgrammingLanguage)
 admin.site.register(Classification, ClassificationAdmin)
-admin.site.register(Algorithm)
+admin.site.register(Algorithm, AlgorithmAdmin)
 admin.site.register(Implementation)

@@ -50,12 +50,46 @@ def show_all_classifications(request):
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
+
+def show_algorithm_by_id(request, id):
+	alg = get_algorithm_by_id(int(id))
+	
+	classification = alg.classification
+		
+	t = get_template('display_algorithm_by_id.html')
+	
+	ctx_variables = {}
+	
+	ctx_variables['algorithm_name'] = alg.name
+	ctx_variables['algorithm_classification'] = classification.name
+	ctx_variables['algorithm_about'] = alg.description
+	ctx_variables['classification_algp_url'] = make_classification_link(classification.id)
+	ctx_variables['classification_dbp_url'] = classification.uri
+	
+	ctx = Context(ctx_variables)
+	
+	html = t.render(ctx)
+			
+	return HttpResponse(html)
 	
 def show_classification_by_id(request, id):		
 	classification = get_classification_by_id(int(id))
 	
+	algs = get_algorithms_by_classification(classification)
+	
+	alg_display_url = get_alg_display_url()
+	
+	
+	ids = map(lambda alg: alg.id, algs)
+	algs = map(lambda alg: alg.name, algs)
+	
+	urls = [alg_display_url.replace('#',str(id)) for id in ids]
+	
+	
+	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs, urls)]
+	
 	t = get_template('display_classification.html')
-	ctx = Context({'classif' : classification})
+	ctx = Context({'classif' : classification, 'algorithms' : algs})
 	html = t.render(ctx)
 			
 	return HttpResponse(html)

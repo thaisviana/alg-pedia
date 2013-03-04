@@ -9,6 +9,9 @@ from extractor.FileWriters import TXTWriter
 from extractor.Extractor import ColumnExtractor
 from extractor.DBPediaQueryFetcher import QueryFetcher
 from algorithm.models import Classification
+from algorithm.controllers import insert_classification_db, insert_algorithm_db
+
+from extractor.WikiPediaExtractors import WikiPediaAbstractExtractor
 
 class Bootstrapper():
 	def __init__(self):
@@ -28,7 +31,46 @@ class Bootstrapper():
 		#self.insertClassifications(filename, 0)
 		
 		# second parameter is a list of columns that will be used create the classification object
-		self.insert_classifications(filename, [0])
+		#self.insert_classifications(filename, [0])
+		self.populate_database(filename, [0,2])
+		
+	# second parameter is a list of columns that will be used to populate the database
+	def populate_database(self, filename, cols):
+		col_extractor = ColumnExtractor(filename)
+		
+		class_alg_mapping = zip(col_extractor.extract_column(cols[0]), col_extractor.extract_column(cols[1]))
+		
+		for mapping in class_alg_mapping:
+			classif = self.insert_classification(mapping[0])
+			alg = self.insert_algorithm(mapping[1], classif)
+		
+	def insert_classification(self, classif_url):
+		(name, uri) = self.extract_name_uri(classif_url)
+		print name + ': ' + uri
+		
+		classif = insert_classification_db(name, uri)
+
+		return classif
+	
+	def insert_algorithm(self, alg_url, classif):
+		try:
+			wiki_alg_extractor = WikiPediaAbstractExtractor()
+			wiki_alg_extractor.search_page(alg_url)
+			about = wiki_alg_extractor.get_alg_about()
+			name = wiki_alg_extractor.get_alg_name()
+		
+			alg = insert_algorithm_db(name, about, classif)
+			return alg
+		except Exception, e:
+			print e
+			return None
+		
+	def extract_name_uri(self, classif_uri):
+		name = classif_uri.split(':')[-1]
+		name = name.replace('_',' ')
+		name = name.title()
+		
+		return (name, classif_uri)
 		
 	def insert_classifications(self, filename, cols):
 		col_extractor = ColumnExtractor(filename)
