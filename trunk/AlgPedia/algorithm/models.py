@@ -3,6 +3,9 @@ from django.db import models
 class Author(models.Model):
 	name = models.CharField(max_length=30)
 	uri = models.URLField()
+	
+	def __unicode__(self):
+		return u'%s' %self.name.lower().title()
 
 class ProgrammingLanguage(models.Model):
 	name = models.CharField(max_length=10)
@@ -30,7 +33,7 @@ class Algorithm(models.Model):
 		return "http://localhost:8000/show/alg/id/%i" % self.id
 	
 	def __unicode__(self):
-		return u'%s' % self.name
+		return u'%s' % self.name.lower().title()
 
 class Implementation(models.Model):
 	# an algorithm can have many implementations

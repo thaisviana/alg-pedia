@@ -13,7 +13,11 @@ class ImplementationAdmin(admin.ModelAdmin):
 	list_display = ('algorithm', 'programming_language')
 	search_fields = ('algorithm', 'programming_language')
 
-admin.site.register(Author)
+class AuthorAdmin(admin.ModelAdmin):
+	list_display = ('name', 'uri')
+	search_fields = ('name',)
+
+admin.site.register(Author, AuthorAdmin)
 admin.site.register(ProgrammingLanguage)
 admin.site.register(Classification, ClassificationAdmin)
 admin.site.register(Algorithm, AlgorithmAdmin)

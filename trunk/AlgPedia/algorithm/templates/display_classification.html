@@ -13,6 +13,19 @@
 <div class="alert alert-info ">
 	<h4><i class="icon-align-center"></i> AlgPedia</h4>
 </div>
+
+	<script>
+	$(function() {
+		$("#add").click(function() {
+			
+			var form = document.forms[0];
+			var classification_id = form['classification_id'].value;
+			
+			window.location = "http://localhost:8000/add/cat/id/"+classification_id;
+					
+		});
+	});
+	</script>
 </head>
 <body>
 	<div class="container-fluid">
@@ -35,7 +48,6 @@
 					</tr>
 				</table>
 			</div>
-			
 			<div class="control-group info span10 ">
 				<div class="input-append">
 					<input class="input-xxlarge" id="search" placeholder="Search" type="text">
@@ -50,8 +62,9 @@
 			
 			
 			<!-- table containing algorithms with such classification -->
-			<form id="add_algorithm" target="localhost:8000/add/cat/id/{{classif.id}}">
-				<input type="submit" value="Inserir Algoritmo" />
+			<form id="add_algorithm" >
+				<input type="hidden" name="classification_id" value="{{classif.id}}"/>
+				<input type="button" id="add" value="Add Algorithm" /></br></br>
 				
 				<table id="algorithms">
 					{% for alg in algorithms %}

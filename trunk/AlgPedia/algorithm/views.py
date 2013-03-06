@@ -1,6 +1,6 @@
 # Create your views here.
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
 
@@ -118,12 +118,27 @@ def show_classification_by_id(request, id):
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
-	
+
+
 def add_by_category(request, id):		
 	classification = get_classification_by_id(int(id))
-	
+	programming_languages = get_all_programming_languages()	
 	t = get_template('add_form.html')
-	ctx = Context({'classif' : classification})
+	ctx = Context({'classif' : classification, 'programming_languages' : programming_languages})
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
+	
+	
+def add_algorithm_by_category(request, id, alg_name, author_name, alg_about):
+
+	#redirect to show alg by id
+	
+	alg_author = insert_author_by_name(author_name)
+	
+	alg_classification = get_classification_by_id(int(id))
+	
+	algorithm = insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classification)
+	
+	return HttpResponseRedirect(algorithm.get_show_url())
+	
