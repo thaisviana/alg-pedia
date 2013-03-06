@@ -56,12 +56,14 @@ class WikiPediaAbstractExtractor:
 			if match:
 				pseudo_code = language.find('pre')
 				
-				pseudo_srcs.append((match.group(1),pseudo_code.text))
+				#pseudo_srcs.append((match.group(1),pseudo_code.text))
+				pseudo_srcs.append((match.group(1),pseudo_code))
 			
 			match = self.src_pattern.match(language['class'][1])
 			if match:
 				pseudo_code = language.find('pre')
-				pseudo_srcs.append((match.group(1),pseudo_code.text))
+				#pseudo_srcs.append((match.group(1),pseudo_code.text))
+				pseudo_srcs.append((match.group(1),pseudo_code))
 				
 		return pseudo_srcs
 		
@@ -94,7 +96,8 @@ class WikiPediaAbstractExtractor:
 			if match:
 				pseudo_code = language.find('pre')
 				language = match.group(1)
-				implementations.append((language, pseudo_code.text))
+				#implementations.append((language, pseudo_code.text))
+				implementations.append((language, pseudo_code))
 				
 		return implementations
 		
