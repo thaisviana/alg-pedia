@@ -10,6 +10,7 @@
   <rdf:Description rdf:about="{{URI DO ALGORITMO}}">
     <rdfs:label xml:lang="en">{{NOME DO ALGORITMO}}</rdfs:label>
     <rdfs:comment xml:lang="en">{{COMENTÁRIO}}</rdfs:comment>
-    <algpedia-owl:classification rdf:resource="{{URI DO OBJETO}}" />
+    <algpedia-owl:classification rdf:resource="{{CLASSIFICACAO DO ALGORITMO}}" />
+	<owl:sameAs rdf:resource="{{URI DO ALGORITMO NA DBPEDIA}}"/>
   </rdf:Description>
 </rdf:RDF>
