@@ -1,5 +1,6 @@
+import os
 from algorithm.models import Classification, Implementation, Author, Algorithm, ProgrammingLanguage
-
+from extractor.FileWriters import RDFWriter
 def is_database_empty():
 	empty = 0
 	
@@ -76,9 +77,9 @@ def insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classifica
 	
 	return algorithm
 	
-def insert_algorithm_db(a_name, a_about, a_classif):
-	alg, created = Algorithm.objects.get_or_create(name=a_name, description=a_about, classification=a_classif)
+def insert_algorithm_db(a_name, a_about, a_classif, a_uri):
 	
+	alg, created = Algorithm.objects.get_or_create(name=a_name, description=a_about, classification=a_classif, uri=a_uri)
 	return alg	
 		
 def insert_programming_langage_db(i_language):
@@ -94,8 +95,8 @@ def insert_implementation_db(i_alg, i_language_id, i_code):
 	return implementation
 	
 def get_all_algorithms():
-	return Algorithm.objects.all()
-		
+	return Algorithm.objects.order_by("name")
+	
 def get_algorithm_by_id(a_id):
 	try:
 		alg = Algorithm.objects.get(id=a_id)
@@ -137,6 +138,22 @@ def get_implementations_by_alg_id(a_id):
 	except Algorithm.DoesNotExist:
 		return []
 
+def try_create_algorithm_rdf(a_id):
+
+	base_path = os.path.dirname(__file__)
+	file_name = os.path.join(base_path, 'static/rdf/').replace('\\', '/')
+	file_name = file_name+'rdf_alg_%i.xml' %a_id
+	
+	if not os.path.exists(file_name):	
+		algorithm = get_algorithm_by_id(a_id)
+		rdf_writer = RDFWriter(algorithm, file_name)
+		
+		rdf_name = rdf_writer.create_rdf_file()
+		
+		return rdf_name
+	
+	return file_name
+		
 def make_classification_link(c_id):
 	#base_link = get_classification_display_url()
 	#return base_link.replace("#", c_id)

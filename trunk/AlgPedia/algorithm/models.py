@@ -28,6 +28,7 @@ class Algorithm(models.Model):
 	description = models.TextField()
 	author = models.ForeignKey(Author, null=True, blank=True)
 	classification = models.ForeignKey(Classification, null=True, blank=True)
+	uri = models.URLField()
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/alg/id/%i" % self.id

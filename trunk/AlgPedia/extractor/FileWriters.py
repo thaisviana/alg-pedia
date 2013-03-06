@@ -134,45 +134,55 @@ class JSONWriter(FileWriter):
 
 # testar
 class RDFWriter(FileWriter):
-	def __init__(self, algorithm, implementations):
+	def __init__(self, algorithm, file_name):
 		self.algorithm = algorithm
-		self.RDF_variables = {'ALG_NAME': '', 'ALG_URI': '', 'CAT_NAME': '', 'CAT_URI': '', 'IMPLEMENTATION_URIS' : []}
+		self.classification = algorithm.classification
+		self.file_name = file_name
+		self.RDF_variables = {}
 	
+	def set_file_name(self, file_name):
+		self.file_name = file_name
+		
 	def generate_RDF_text(self):
-		path = os.path.join(os.path.dirname(__file__), '../algorithm/rdf/rdf_modelo.xml').replace('/','\\')
+		#path = os.path.join(os.path.dirname(__file__), '../algorithm/rdf/rdf_modelo.xml').replace('/','\\')
 		
-		self.RDF_variables['ALG_NAME'] = algorithm.name 
-		self.RDF_variables['ALG_URI'] =  algorithm.get_show_url()
-		self.RDF_variables['CAT_NAME'] = algorithm.classification.name
-		self.RDF_variables['CAT_URI'] = algorithm.classification.get_show_url()
-		
-		for implementation in implementations:
-			self.RDF_variables['IMPLEMENTATION_URI'].append(implementation.get_show_url())
+		self.RDF_variables['ALG_NAME'] = self.algorithm.name 
+		self.RDF_variables['ALG_ALGPEDIA_URI'] =  self.algorithm.get_show_url()
+		self.RDF_variables['ALG_DBPEDIA_URI'] = self.algorithm.uri
+		self.RDF_variables['ALG_ABOUT'] = self.algorithm.classification.name
+		self.RDF_variables['ALG_CLASSIFICATION_NAME'] = self.classification.name
 		
 		alg_rdf_text = self.replace_vars_in_template(self.RDF_variables)
-		
-		print alg_rdf_text
+
 		return alg_rdf_text
 		
 	def replace_vars_in_template(self, variables):
-		template_path = os.path.join(os.path.dirname(__file__), '../algorithm/rdf/rdf_modelo.xml').replace('/','\\')
+		template_path = os.path.join(os.path.dirname(__file__), '../algorithm/static/rdf/rdf_modelo.xml').replace('/','\\')
 		
 		rdf_template = open(template_path)
-		lines = rdf_model.readlines()
+		lines = rdf_template.readlines()
 		rdf_template.close()
 		
 		text = '\n'.join(lines)
 		
-		implementation_uri_template = "<algpedia-owl:implementation rdf:resource=\"IMPLEMENTATION_URI\" />"
-		
-		variables['IMPLEMENTATION_URIS'] = map(lambda uri: "<algpedia-owl:implementation rdf:resource=" + URI + " />", variables['IMPLEMENTATION_URIS'])
-		
-		variables['IMPLEMENTATION_URIS'] = '\n'.join(variables['IMPLEMENTATION_URIS'])
-		
 		for variable, value in variables.iteritems():
-			text.replace(variable, value)
+			text = text.replace(variable, str(value))
 		
 		return text
+		
+	def create_rdf_file(self):
+		rdf_text = self.generate_RDF_text()
+		
+		
+		rdf_file = open(self.file_name, 'w')
+		rdf_file.write(rdf_text)
+		rdf_file.close()
+		
+		file_parts = self.file_name.split('/')
+		file_name = '/'.join(file_parts[-2:])
+		
+		return file_name
+		
 		
 # HTMLToXXX converter Classes
 class HTMLToCSV:
