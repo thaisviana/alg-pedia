@@ -69,16 +69,17 @@ def delete_algorithm_db(alg):
 		return None
 		
 	return True
-		
+
+def insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classification):
+	algorithm = Algorithm(name=alg_name, description=alg_about, author=alg_author, classification=alg_classification)
+	algorithm.save()
+	
+	return algorithm
+	
 def insert_algorithm_db(a_name, a_about, a_classif):
-	try:
-		alg = Algorithm.objects.get(name=a_name)
-		return alg
-	except Algorithm.DoesNotExist:
-		aux = Algorithm(name=a_name, description=a_about, classification=a_classif)
-		aux.save()
-		return aux
-		
+	alg, created = Algorithm.objects.get_or_create(name=a_name, description=a_about, classification=a_classif)
+	
+	return alg	
 		
 def insert_programming_langage_db(i_language):
 	p_lang, created = ProgrammingLanguage.objects.get_or_create(name=i_language.upper())		
@@ -102,7 +103,14 @@ def get_algorithm_by_id(a_id):
 	except Algorithm.DoesNotExist:
 		return None
 		
-		
+def get_all_programming_languages():
+	return ProgrammingLanguage.objects.order_by("name")
+	
+def insert_author_by_name(author_name):
+	author, created = Author.objects.get_or_create(name=author_name.upper(), uri="http://www.google.com/?q="+author_name)		
+	
+	return author
+
 def get_implementations_by_alg_id(a_id):
 	try:
 		alg = Algorithm.objects.get(id=a_id)
