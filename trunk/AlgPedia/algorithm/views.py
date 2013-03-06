@@ -81,6 +81,7 @@ def show_algorithm_by_id(request, id):
 	ctx_variables = {}
 	
 	ctx_variables['algorithm_name'] = alg.name
+	ctx_variables['algorithm_id'] = alg.id
 	ctx_variables['algorithm_classification'] = classification.name
 	ctx_variables['algorithm_about'] = alg.description
 	ctx_variables['classification_algp_url'] = classification.get_show_url() 
@@ -96,6 +97,25 @@ def show_algorithm_by_id(request, id):
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
+	
+def display_add_implementation(request, id):
+	t = get_template('add_algorithm_implementation.html')
+	p_langs = get_all_programming_languages()
+	alg = get_algorithm_by_id(int(id))
+	ctx = Context({'programming_languages' : p_langs, 'algorithm' : alg})
+	html = t.render(ctx)
+	return HttpResponse(html)
+	
+def add_implementation_by_algorithm(request, alg_id, lang_id, code):
+	# adds an implementation to an algorithm and redirects to the alg display code
+	
+	alg = get_algorithm_by_id(int(alg_id))
+	p_lang = get_programming_language_by_id(int(lang_id))
+	
+	implementation =  insert_implementation_alg_p_lang(alg, p_lang, code)	
+	
+	return HttpResponseRedirect(alg.get_show_url())
+	
 	
 def show_classification_by_id(request, id):		
 	classification = get_classification_by_id(int(id))
@@ -120,10 +140,10 @@ def show_classification_by_id(request, id):
 	return HttpResponse(html)
 
 
-def add_by_category(request, id):		
+def display_add_algorithm(request, id):		
 	classification = get_classification_by_id(int(id))
 	programming_languages = get_all_programming_languages()	
-	t = get_template('add_form.html')
+	t = get_template('add_algorithm.html')
 	ctx = Context({'classif' : classification, 'programming_languages' : programming_languages})
 	html = t.render(ctx)
 			
@@ -141,4 +161,5 @@ def add_algorithm_by_category(request, id, alg_name, author_name, alg_about):
 	algorithm = insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classification)
 	
 	return HttpResponseRedirect(algorithm.get_show_url())
+	
 	

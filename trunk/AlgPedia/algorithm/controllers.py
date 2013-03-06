@@ -85,8 +85,8 @@ def insert_programming_langage_db(i_language):
 	p_lang, created = ProgrammingLanguage.objects.get_or_create(name=i_language.upper())		
 	return p_lang
 		
-def insert_implementation_db(i_alg, i_language, i_code):
-	p_lang = insert_programming_langage_db(i_language)
+def insert_implementation_db(i_alg, i_language_id, i_code):
+	p_lang = insert_programming_langage_db(i_language_id)
 		
 	implementation = Implementation(algorithm=i_alg, code=i_code, programming_language=p_lang)
 	implementation.save()
@@ -105,11 +105,27 @@ def get_algorithm_by_id(a_id):
 		
 def get_all_programming_languages():
 	return ProgrammingLanguage.objects.order_by("name")
+
+def insert_implementation_alg_p_lang(i_alg, i_p_lang, i_code):
+	imp = Implementation(algorithm=i_alg, programming_language=i_p_lang, code=i_code)
+	imp.save()
 	
+	return imp
+	
+def get_programming_language_by_id(p_lang_id):
+	try:
+		p_lang = ProgrammingLanguage.objects.get(id=p_lang_id)
+		return p_lang
+	except ProgrammingLanguage.DoesNotExist:
+		return None
+		
 def insert_author_by_name(author_name):
 	author, created = Author.objects.get_or_create(name=author_name.upper(), uri="http://www.google.com/?q="+author_name)		
 	
 	return author
+	
+	alg, p_lang, code
+		
 
 def get_implementations_by_alg_id(a_id):
 	try:
