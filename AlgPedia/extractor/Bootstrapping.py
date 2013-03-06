@@ -32,20 +32,20 @@ class Bootstrapper():
 		
 		# second parameter is a list of columns that will be used create the classification object
 		#self.insert_classifications(filename, [0])
-		self.populate_database(filename, [0,2])
+		self.populate_database(filename, [0,1,2])
 		
 	# second parameter is a list of columns that will be used to populate the database
 	def populate_database(self, filename, cols):
 		col_extractor = CSVColumnExtractor(filename)
 		
-		class_alg_mapping = zip(col_extractor.extract_column(cols[0]), col_extractor.extract_column(cols[1]))
+		class_alg_mapping = zip(col_extractor.extract_column(cols[0]), col_extractor.extract_column(cols[1]), col_extractor.extract_column(cols[2]))
 		
 		for mapping in class_alg_mapping:
 			#print mapping[0]
 			#if mapping[0].split(':')[-1] == 'Sorting_algorithms':
 			classif = self.insert_classification(mapping[0])
 			#alg = self.insert_algorithm(mapping[1], classif)
-			alg = self.insert_algorithm_conditional(mapping[1], classif)
+			alg = self.insert_algorithm_conditional(mapping[2], mapping[1], classif)
 		
 	def insert_classification(self, classif_url):
 		(name, uri) = self.extract_name_uri(classif_url)
@@ -55,7 +55,7 @@ class Bootstrapper():
 
 		return classif
 		
-	def insert_algorithm_conditional(self, alg_url, classif):
+	def insert_algorithm_conditional(self, alg_url, alg_uri, classif):
 		try:
 			wiki_alg_extractor = WikiPediaAbstractExtractor()
 			
@@ -76,7 +76,7 @@ class Bootstrapper():
 				print "No implementation or pseudo for this algorithm.\n"
 				return None
 				
-			alg = insert_algorithm_db(name, about, classif)	
+			alg = insert_algorithm_db(name, about, classif, alg_uri)	
 			
 			if en_implementations:
 				for en_implementation in en_implementations:

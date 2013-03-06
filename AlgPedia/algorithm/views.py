@@ -75,7 +75,13 @@ def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
 	classification = alg.classification
-		
+	implementations = get_implementations_by_alg_id(int(id))
+	
+	# Try and create an rdf file for the required algorithm
+	# returns the name of the file so we can show it later
+	rdf_path = try_create_algorithm_rdf(int(id))
+	
+	
 	t = get_template('display_algorithm_by_id.html')
 	
 	ctx_variables = {}
@@ -87,14 +93,19 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['classification_algp_url'] = classification.get_show_url() 
 	#make_classification_link(classification.id)
 	ctx_variables['classification_dbp_url'] = classification.uri
+	ctx_variables['rdf_path'] = rdf_path
 	
-	implementations = get_implementations_by_alg_id(int(id))
+	
+	
+	
 	
 	ctx_variables['implementations'] = implementations
 	
 	ctx = Context(ctx_variables)
 	
 	html = t.render(ctx)
+	
+	
 			
 	return HttpResponse(html)
 	
