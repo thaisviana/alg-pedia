@@ -151,7 +151,10 @@ def try_create_algorithm_rdf(a_id):
 		rdf_name = rdf_writer.create_rdf_file()
 		
 		return rdf_name
-	
+	else:
+		file_parts = file_name.split('/')
+		file_name = '/'.join(file_parts[-2:])
+		
 	return file_name
 		
 def make_classification_link(c_id):
