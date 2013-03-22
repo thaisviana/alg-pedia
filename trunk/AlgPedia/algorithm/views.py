@@ -11,7 +11,7 @@ from extractor.Bootstrapping import Bootstrapper
 
 def show_main_page(request):	
 	t = get_template('default_debug.html')
-	ctx = Context({'message' : 'Main Page'})
+	ctx = Context({'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.', 'text':'OI'})
 	html = t.render(ctx)
 			
 	return HttpResponse(html)
