@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from django.contrib.auth.views import login, logout
 from algorithm.views import *
 #show_main_page, sync_database, clear_database, show_all_classifications, show_classification_by_id
 
@@ -12,6 +13,10 @@ urlpatterns = patterns('',
 	url(r'^$', show_main_page),
 	url(r'^sync/$', sync_database),
 	url(r'^clearDB/$', clear_database),
+	url(r'^accounts/profile/$', profile),
+	url(r'^accounts/login/$', 'django.contrib.auth.views.login',{'template_name': 'accounts/login.html'}),
+	url(r'^accounts/logout/$', logout),
+	url(r'^signin/$', signin),
 	url(r'^show/cat/all$', show_all_classifications),
 	url(r'^show/cat/id/(\d+)', show_classification_by_id), 
 	url(r'^add/cat/id/(\d+)', display_add_algorithm), #shows the page where we can add an algorithm by category
@@ -22,8 +27,6 @@ urlpatterns = patterns('',
 	# class_id / name / author / about
 	url(r'^added/imp/alg/(\d+)/(\d+)/(.+)$', add_implementation_by_algorithm), #processes what comes from inserting the implementation
 	# alg_id / language_id / implementation /
-	
-	
 	
 	# serving static files in development
 	(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root' : './algorithm/static/'}),
