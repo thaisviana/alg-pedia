@@ -1,0 +1,37 @@
+{% extends "main_template.html" %}
+{% block content %}
+	<div class="span2"></div>
+	<div id="login" class="span4">
+	{{message}}
+	{% if form.errors %}
+		<p>Your username and password didn't match. Please try again.</p>
+	{% endif %}
+<form class="form-horizontal" method="POST" action="{% url 'django.contrib.auth.views.login' %}">
+	{% csrf_token %}
+	<div class="control-group">
+		<label class="text-center">
+			If you are not an AlgPedia user - <a href="http://localhost:8000/signin">SignIn</a>
+		</label>
+	</div>
+  <div class="control-group">
+    <label class="control-label" for="username">Username</label>
+    <div class="controls">
+      {{ form.username }}
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="password">Password</label>
+    <div class="controls">
+      {{ form.password }}
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      
+      <button type="submit" class="btn">Sign in</button>
+    </div>
+  </div>
+</form>
+	</div>
+	<div class="span4"></div>
+{% endblock %}

@@ -1,5 +1,5 @@
 # Create your views here.
-
+from django.contrib import auth
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
@@ -8,13 +8,17 @@ from algorithm.models import Classification, Implementation, Author, Algorithm, 
 from algorithm.controllers import *
 #get_all_classifications_name_link, wipe_database, is_database_empty, get_classification_by_id
 from extractor.Bootstrapping import Bootstrapper
+from django.template import RequestContext
+from algorithm.userForm import UserForm
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.decorators import login_required
+from django.core.context_processors import csrf
+from django.shortcuts import render_to_response
+
 
 def show_main_page(request):	
-	t = get_template('default_debug.html')
-	ctx = Context({'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.', 'text':'OI'})
-	html = t.render(ctx)
-			
-	return HttpResponse(html)
+	return HttpResponse(get_template('default_debug.html').render(Context({'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.', 'text':'OI'})))
 
 def sync_database(request):
 	sync_message = ''
@@ -42,47 +46,53 @@ def clear_database(request):
 			
 	return HttpResponse(html)
 	
-def show_all_classifications(request):
-	classifications = get_all_classifications_name_link()
+
+def signin(request):
 	
-	t = get_template('display_all_classifications.html')
-	ctx = Context({'classifications' : classifications})
-	html = t.render(ctx)
-			
-	return HttpResponse(html)
+	if request.method == 'POST':
+		form =  UserForm(request.POST)
+		print("post")
+		if form.is_valid():
+			new_user = form.save()
+		c = dict(form=UserForm())
+		c.update(csrf(request))
+		return render_to_response("accounts/signin.html", c)
+	else:
+		c = dict(form=UserForm())
+		c.update(csrf(request))
+		return render_to_response("accounts/signin.html", c)
+
+
+def logout(request):
+	auth.logout(request)
+	# Redirect to a success page.
+	return HttpResponse(get_template('accounts/logout.html').render(Context({'message': 'foi?'})))
+
+@login_required
+def profile(request):
+	return HttpResponse(get_template('accounts/profile.html').render(Context({'message': 'foi?'})))
+
+def show_all_classifications(request):
+	return render_to_response('display_all_classifications.html', {'classifications' : get_all_classifications_name_link(), 
+	'logged':  request.user.is_authenticated()},context_instance=RequestContext(request))
 
 def show_all_algorithms(request):
 	algorithms = get_all_algorithms()
-	
-	t = get_template('display_all_algorithms.html')
-	
 	ctx_variables = {}
-	
 	algs = [ (alg.get_show_url(), alg.name) for alg in algorithms]
-	
-	
 	algorithms = [{'link' : a[0], 'name' : a[1]} for a in algs]
-	
 	ctx_variables['algorithms'] = algorithms
-	
-	ctx = Context(ctx_variables)
-	
-	html = t.render(ctx)
-	
-	return HttpResponse(html)
-	
+	ctx_variables['logged'] = request.user.is_authenticated()
+	return HttpResponse(get_template('display_all_algorithms.html').render(Context(ctx_variables)))
+
 def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
 	classification = alg.classification
-	implementations = get_implementations_by_alg_id(int(id))
 	
 	# Try and create an rdf file for the required algorithm
 	# returns the name of the file so we can show it later
 	rdf_path = try_create_algorithm_rdf(int(id))
-	
-	
-	t = get_template('display_algorithm_by_id.html')
 	
 	ctx_variables = {}
 	
@@ -94,29 +104,17 @@ def show_algorithm_by_id(request, id):
 	#make_classification_link(classification.id)
 	ctx_variables['classification_dbp_url'] = classification.uri
 	ctx_variables['rdf_path'] = rdf_path
+	ctx_variables['implementations'] = get_implementations_by_alg_id(int(id))
+	ctx_variables['logged'] = request.user.is_authenticated()
 	
-	
-	
-	
-	
-	ctx_variables['implementations'] = implementations
-	
-	ctx = Context(ctx_variables)
-	
-	html = t.render(ctx)
-	
-	
-			
-	return HttpResponse(html)
-	
+	return HttpResponse(get_template('display_algorithm_by_id.html').render(Context(ctx_variables)))
+
+@login_required	
 def display_add_implementation(request, id):
-	t = get_template('add_algorithm_implementation.html')
-	p_langs = get_all_programming_languages()
-	alg = get_algorithm_by_id(int(id))
-	ctx = Context({'programming_languages' : p_langs, 'algorithm' : alg})
-	html = t.render(ctx)
-	return HttpResponse(html)
-	
+	return HttpResponse(get_template('add_algorithm_implementation.html').render(Context({'programming_languages' : get_all_programming_languages(), 'algorithm' : get_algorithm_by_id(int(id)),
+	'logged':  request.user.is_authenticated()})))
+
+@login_required
 def add_implementation_by_algorithm(request, alg_id, lang_id, code):
 	# adds an implementation to an algorithm and redirects to the alg display code
 	
@@ -127,49 +125,29 @@ def add_implementation_by_algorithm(request, alg_id, lang_id, code):
 	
 	return HttpResponseRedirect(alg.get_show_url())
 	
-	
-def show_classification_by_id(request, id):		
+def show_classification_by_id(request, id):	
 	classification = get_classification_by_id(int(id))
-	
 	algs = get_algorithms_by_classification(classification)
-	
-	alg_display_url = get_algorithm_display_url()
-	
-	
-	ids = map(lambda alg: alg.id, algs)
 	algs = map(lambda alg: alg.name, algs)
 	
-	urls = [alg_display_url.replace('#',str(id)) for id in ids]
-	
-	
-	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs, urls)]
-	
-	t = get_template('display_classification.html')
-	ctx = Context({'classif' : classification, 'algorithms' : algs})
-	html = t.render(ctx)
+	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs, [get_algorithm_display_url().replace('#',str(id)) for id in map(lambda alg: alg.id, algs)])]
 			
-	return HttpResponse(html)
+	return HttpResponse(get_template('display_classification.html').render(Context({'classif' : classification, 
+	'algorithms' : algs,
+	'logged':  request.user.is_authenticated()})))
 
-
+@login_required
 def display_add_algorithm(request, id):		
-	classification = get_classification_by_id(int(id))
-	programming_languages = get_all_programming_languages()	
-	t = get_template('add_algorithm.html')
-	ctx = Context({'classif' : classification, 'programming_languages' : programming_languages})
-	html = t.render(ctx)
-			
-	return HttpResponse(html)
-	
-	
+	return HttpResponse(get_template('add_algorithm.html').render(Context({'classif' : get_classification_by_id(int(id)), 
+	'programming_languages' : get_all_programming_languages(),
+	'logged':  request.user.is_authenticated()})))
+
+@login_required	
 def add_algorithm_by_category(request, id, alg_name, author_name, alg_about):
 
 	#redirect to show alg by id
 	
-	alg_author = insert_author_by_name(author_name)
-	
-	alg_classification = get_classification_by_id(int(id))
-	
-	algorithm = insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classification)
+	algorithm = insert_algorithm_with_author(alg_name, alg_about, insert_author_by_name(author_name), get_classification_by_id(int(id)))
 	
 	return HttpResponseRedirect(algorithm.get_show_url())
 	

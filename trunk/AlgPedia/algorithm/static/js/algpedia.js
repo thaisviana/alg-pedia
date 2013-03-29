@@ -1,6 +1,5 @@
 
-	$(function() {
-	
+	$(function() {	
 	$("#inputAuthor").attr("readonly", true);
 		$("#Unknown").attr("checked", true);
 		/*$('#algorithm_about').wysihtml5({
@@ -30,8 +29,8 @@
 		
 			var p_lang_id = form['programming_languages'].value;
 			var alg_id = form['algorithm_id'].value;
-			window.location = "http://localhost:8000/show/alg/id/"+alg_id;
-			//window.location = "http://localhost:8000/added/imp/alg/"+alg_id+"/"+p_lang_id+"/"+imp_code;
+			//window.location = "http://localhost:8000/show/alg/id/"+alg_id;
+			window.location = "http://localhost:8000/added/imp/alg/"+alg_id+"/"+p_lang_id+"/"+imp_code;
 			
 			//alg_id / language_id / implementation /
 			
@@ -56,18 +55,24 @@
 					skin_variant : "silver",
 			});
 		$("#add_implementation").click(function(){
-				var form = document.forms[0];
-				var alg_id = form['algorithm_id'].value;
+		if($('#logged').val()== 'false'){
+			bootbox.alert("You have to login first");
+		}else{			
+			var form = document.forms[0];
+			var alg_id = form['algorithm_id'].value;
 				
-				window.location = "http://localhost:8000/add/alg/id/"+alg_id;
+			window.location = "http://localhost:8000/add/alg/id/"+alg_id;
+		}
 			});
 		$("#add_algorithm").click(function() {
-			
+		if($('#logged').val()== 'false'){
+			bootbox.alert("You have to login first");
+		}else{	
 			var form = document.forms[0];
 			var classification_id = form['classification_id'].value;
 			
 			window.location = "http://localhost:8000/add/cat/id/"+classification_id;
-					
+		}		
 		});
 		tinyMCE.init({
 					// General options
@@ -88,8 +93,8 @@
 			
 			alert(algorithm_about);
 			
-			window.location = "http://localhost:8000//show/cat/id/"+classification_id;
-			//window.location = "http://localhost:8000/added/alg/cat/"+classification_id+"/"+algorithm_name+"/"+algorithm_author+"/"+algorithm_about;
+			//window.location = "http://localhost:8000//show/cat/id/"+classification_id;
+			window.location = "http://localhost:8000/added/alg/cat/"+classification_id+"/"+algorithm_name+"/"+algorithm_author+"/"+algorithm_about;
 			
 			//class_id / name / author / about
 			

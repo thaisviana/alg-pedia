@@ -47,7 +47,6 @@ def get_classification_by_id(c_id):
 	
 
 def get_algorithms_by_classification(a_classification):
-
 	try:
 		algs = Algorithm.objects.filter(classification=a_classification)
 		return algs
