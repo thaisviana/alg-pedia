@@ -1,19 +1,26 @@
 {% extends "main_template.html" %}
 {% block content %}
-	<h4>{{ classif.name }}</h4>
+	<!--<h4>{{ classif.name }}</h4>-->
 	&nbsp;&nbsp;&nbsp;
-	<form class="form-horizontal">
-		<input type="hidden" name="classification_id" value="{{classif.id}}" />
+	<form class="form-horizontal" method="POST">
+	<input type="hidden" id="about" name="about" />
+	{% csrf_token %}
+		<div class="control-group">
+			<label class="control-label" for="inputName"> Classification :</label>
+			<div class="controls">
+				{{form.classification}}
+			</div>
+		</div>	
 		<div class="control-group">
 			<label class="control-label" for="inputName"> Name :</label>
 			<div class="controls">
-				<input type="text" name="algorithm_name" id="inputName" placeholder="Algorithm Name">
+				{{form.name}}
 			</div>
 		</div>					
 		<div class="control-group">
 			<label class="control-label" for="inputAuthor">Author :</label>
 				<div class="controls">
-					<input type="text" name="author_name" id="inputAuthor">&nbsp;&nbsp;
+					{{form.author}}&nbsp;&nbsp;
 					<label class="checkbox inline"> 
 						<input type="checkbox" id="Unknown" value=""> Unknown
 					</label>
@@ -21,18 +28,12 @@
 		</div>				
 		&nbsp;&nbsp;&nbsp;
 		<div class="control-group">
-		<!---<div class='btn-group'>
-		<a class="btn" href="#"><i class="icon-indent-right"></i></a>
-		<a class="btn" href="#"><i class="icon-indent-left"></i></a>
-		<a class="btn" href="#"><i class="icon-bold"></i></a>
-		<a class="btn" href="#"><i class="icon-italic"></i></a>
-		</div> -->
 			<label class="control-label" for="inputAlgorithm">About:</label>
 				<div class="controls">
-					<textarea id="algorithm_about" class="textarea" style="width: 810px; height: 200px"></textarea>
+					{{form.description}}
 				</div>
 		</div>
-		<button class="btn btn-large btn-block btn-info" type="button" id="add_alg">Add Algorithm</button>
+		<button class="btn btn-large btn-block btn-info" type="submit" id="add_alg">Add Algorithm</button>
 	</form>
 
 {% endblock %}

@@ -1,16 +1,6 @@
-
-	$(function() {	
-	$("#inputAuthor").attr("readonly", true);
-		$("#Unknown").attr("checked", true);
-		/*$('#algorithm_about').wysihtml5({
-			"font-styles": true, //Font styling, e.g. h1, h2, etc. Default true
-			"emphasis": true, //Italics, bold, etc. Default true
-			"lists": true, //(Un)ordered lists, e.g. Bullets, Numbers. Default true
-			"html": false, //Button which allows you to edit the generated HTML. Default false
-			"link": true, //Button to insert a link. Default true
-			"image": true, //Button to insert an image. Default true,
-			"color": false //Button to change color of font  
-		});*/
+$(function() {	
+	$("#id_author").attr("readonly", true);
+	$("#Unknown").attr("checked", true);
 
 		$("#Unknown").click(function() {
 			if ($('#Unknown').attr('checked')) {
@@ -54,6 +44,19 @@
 					skin : "o2k7",
 					skin_variant : "silver",
 			});
+		$("#add_implementation").mouseover(function () {
+			return overlib("Add implementation", ABOVE);
+		});
+		$("#add_implementation").mouseout(function () {
+			return nd();
+		});
+		$("#rdf").mouseover(function () {
+			return overlib("This content is available in RDF", ABOVE);
+		});
+		$("#rdf").mouseout(function () {
+			return nd();
+		});
+		$("#add_implementation").css( "padding-left", "+=900" );
 		$("#add_implementation").click(function(){
 		if($('#logged').val()== 'false'){
 			bootbox.alert("You have to login first");
@@ -84,8 +87,12 @@
 
 	
 		$("#add_alg").click(function() {
-			var form = document.forms[0];
+			var algorithm_about = tinymce.get('algorithm_about').getContent();
+			alert(algorithm_about);
+			$("#about").val(algorithm_about);
+			$("#description").val(algorithm_about);
 			
+			/*var form = document.forms[0];		
 			var algorithm_author = form['author_name'].value;
 			var algorithm_about = tinymce.get('algorithm_about').getContent();
 			var classification_id = form['classification_id'].value;
@@ -96,9 +103,7 @@
 			//window.location = "http://localhost:8000//show/cat/id/"+classification_id;
 			window.location = "http://localhost:8000/added/alg/cat/"+classification_id+"/"+algorithm_name+"/"+algorithm_author+"/"+algorithm_about;
 			
-			//class_id / name / author / about
-			
-			
+			//class_id / name / author / about*/
 			
 		});
 		

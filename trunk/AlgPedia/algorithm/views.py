@@ -10,6 +10,7 @@ from algorithm.controllers import *
 from extractor.Bootstrapping import Bootstrapper
 from django.template import RequestContext
 from algorithm.userForm import UserForm
+from algorithm.algorithmForm import AlgorithmForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -68,6 +69,12 @@ def logout(request):
 	# Redirect to a success page.
 	return HttpResponse(get_template('accounts/logout.html').render(Context({'message': 'foi?'})))
 
+def about(request):
+	return HttpResponse(get_template('about.html').render(Context({'message': 'foi?'})))
+
+def contact(request):
+	return HttpResponse(get_template('contact.html').render(Context({'message': 'foi?'})))
+	
 @login_required
 def profile(request):
 	return HttpResponse(get_template('accounts/profile.html').render(Context({'message': 'foi?'})))
@@ -137,10 +144,30 @@ def show_classification_by_id(request, id):
 	'logged':  request.user.is_authenticated()})))
 
 @login_required
-def display_add_algorithm(request, id):		
-	return HttpResponse(get_template('add_algorithm.html').render(Context({'classif' : get_classification_by_id(int(id)), 
-	'programming_languages' : get_all_programming_languages(),
-	'logged':  request.user.is_authenticated()})))
+def display_add_algorithm(request, id):
+	
+	if request.method == 'POST':
+		form =  AlgorithmForm(request.POST)
+		print(form)
+		print(form.errors)
+		print(request.POST['name'])
+		print(request.POST['author'])
+		print(request.POST['about'])
+		print(request.POST['description'])
+		print(request.POST['classification'])
+		#if form.is_valid():
+			#print(form)
+			#new_algorithm = form.save()
+		c = dict(form=AlgorithmForm())
+		c.update(csrf(request))
+		return render_to_response('display_classification.html', c)
+	else:
+		c = {'form' : AlgorithmForm(), 
+		'classif' : get_classification_by_id(int(id)), 
+		'programming_languages' : get_all_programming_languages(),
+		'logged':  request.user.is_authenticated()}
+		c.update(csrf(request))
+		return render_to_response("add_algorithm.html", c)
 
 @login_required	
 def add_algorithm_by_category(request, id, alg_name, author_name, alg_about):

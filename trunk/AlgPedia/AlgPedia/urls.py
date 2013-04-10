@@ -17,6 +17,8 @@ urlpatterns = patterns('',
 	url(r'^accounts/login/$', 'django.contrib.auth.views.login',{'template_name': 'accounts/login.html'}),
 	url(r'^accounts/logout/$', logout),
 	url(r'^signin/$', signin),
+	url(r'^contact/$', contact),
+	url(r'^about/$', about),
 	url(r'^show/cat/all$', show_all_classifications),
 	url(r'^show/cat/id/(\d+)', show_classification_by_id), 
 	url(r'^add/cat/id/(\d+)', display_add_algorithm), #shows the page where we can add an algorithm by category
