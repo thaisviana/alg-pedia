@@ -1,35 +1,43 @@
 {% extends "main_template.html" %}
 {% block content %}
 	<h3><a href="{{ classification_algp_url }}"	target="_blank">{{algorithm_classification }}</a></h3>
-	<div id="classification">
-		<a href="{{ classification_dbp_url }}" target="_blank"> [More Information] </a>
-		<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" /> </a>
-	</div> <br/>
+	 
 	<form id="add_algorithm_form">
 		<input type="hidden" id="algorithm_id" value="{{algorithm_id}}" \>	
-		<h4>{{algorithm_name}}<input type="button" value="Add Implementation" id="add_implementation" ></input></h4>
-		<table class="table table-condensed well">
+		<h4>{{algorithm_name}} &nbsp;<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" id="rdf"/> </a></h4>
+		<table class="table table-condensed info">
 			 <tr>
-				<td> <label class="control-label" for="inputName"> About :</label> </td>
-				<td>  <textarea id="algorithm_about" style="width: 810px; height: 200px">{{algorithm_about}}</textarea> </td>
+				<td> <label class="control-label" for="inputName"> About:</label> </td>
+				<td id="algorithm_about" >&nbsp;{{algorithm_about}}&nbsp;<a href="{{ classification_dbp_url }}" target="_blank"> [More Information] </a></td>
 			 </tr>
 		</table >
-		<label class="control-label" for="inputName"> Implementations :</label>
-		<table id="implementations-table" class="table table-hover info">
-			{% for implementation in implementations %}
-				<tr>
-					<td>{{ implementation.programming_language }}</td>
-						<td>
-						<textarea id="alg_implementation_{{implementation.id}}" style="width: 810px; height: 200px">
+		
+		<label class="control-label" for="inputName"><strong>Implementations :</strong><a id="add_implementation" href="http://localhost:8000/add/alg/id/{{algorithm_id}}"><i class="icon-plus"></i> </a>
+		<!--<input type="button" value="Add Implementation" id="add_implementation" ></input><i class="icon-plus"></i>-->
+		</label>
+		
+		<div class="accordion" id="accordion2">
+		{% for implementation in implementations %}
+		<div class="accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{implementation.id}}">
+					{{ implementation.programming_language }}
+				</a>
+			</div>
+			<div id="collapse{{implementation.id}}" class="accordion-body collapse in">
+			<div class="span2"></div>
+				<div class="accordion-inner align-center">
+				
+					<textarea id="alg_implementation_{{implementation.id}}" name="alg_implementation_{{implementation.id}}" style="width: 810px; height: 200px" >
 							{{ implementation.code }}
 						</textarea>
-					</td>
-				</tr>
-				{% empty %}
-				<tr>
-					<td> There are no implementations available for this algorithm yet. </td>
-				</tr>
-			{% endfor %}			
-		</table >		
+				</div>
+			</div>
+		</div>
+		{% empty %}
+					<div> There are no implementations available for this algorithm yet. </div>
+		{% endfor %}	
+		</div>
+			
 	</form>
 {% endblock %}
