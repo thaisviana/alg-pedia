@@ -135,9 +135,9 @@ def add_implementation_by_algorithm(request, alg_id, lang_id, code):
 def show_classification_by_id(request, id):	
 	classification = get_classification_by_id(int(id))
 	algs = get_algorithms_by_classification(classification)
-	algs = map(lambda alg: alg.name, algs)
+	algs_names = map(lambda alg: alg.name, algs)
 	
-	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs, [get_algorithm_display_url().replace('#',str(id)) for id in map(lambda alg: alg.id, algs)])]
+	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs_names, [get_algorithm_display_url().replace('#',str(id)) for id in map(lambda alg: alg.id, algs)])]
 			
 	return HttpResponse(get_template('display_classification.html').render(Context({'classif' : classification, 
 	'algorithms' : algs,
