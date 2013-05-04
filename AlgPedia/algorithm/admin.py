@@ -6,12 +6,12 @@ class ClassificationAdmin(admin.ModelAdmin):
 	search_fields = ('name',)
 	
 class AlgorithmAdmin(admin.ModelAdmin):
-	list_display = ('name', 'description', 'classification', 'visible')
-	search_fields = ('name', 'classification__name', 'visible')
+	list_display = ('name', 'description', 'classification')
+	search_fields = ('name', 'classification__name')
 	
 class ImplementationAdmin(admin.ModelAdmin):
-	list_display = ('algorithm', 'programming_language', 'visible')
-	search_fields = ('algorithm', 'programming_language', 'visible')
+	list_display = ('algorithm', 'programming_language')
+	search_fields = ('algorithm', 'programming_language')
 
 admin.site.register(ProgrammingLanguage)
 admin.site.register(Classification, ClassificationAdmin)
