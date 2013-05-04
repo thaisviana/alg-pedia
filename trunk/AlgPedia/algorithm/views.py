@@ -117,19 +117,16 @@ def show_algorithm_by_id(request, id):
 
 @login_required	
 def display_add_implementation(request, id):
-	return HttpResponse(get_template('add_algorithm_implementation.html').render(Context({'programming_languages' : get_all_programming_languages(), 'algorithm' : get_algorithm_by_id(int(id)),
-	'logged':  request.user.is_authenticated()})))
 
-@login_required
-def add_implementation_by_algorithm(request, alg_id, lang_id, code):
-	# adds an implementation to an algorithm and redirects to the alg display code
-	
-	alg = get_algorithm_by_id(int(alg_id))
-	p_lang = get_programming_language_by_id(int(lang_id))
-	
-	implementation =  insert_implementation_alg_p_lang(alg, p_lang, code)	
-	
-	return HttpResponseRedirect(alg.get_show_url())
+	if request.method == 'POST':
+		algorithm = get_algorithm_by_id(int(request.POST['algorithm_id']))
+		p_lang = get_programming_language_by_id(int(request.POST['programming_languages']))
+		implementation =  insert_implementation_alg_p_lang(algorithm, p_lang, request.POST['algorithm_code'])
+		return HttpResponseRedirect(algorithm.get_show_url())
+	else:
+		c = {'logged':  request.user.is_authenticated(),'programming_languages' : get_all_programming_languages(), 'algorithm' : get_algorithm_by_id(int(id))}
+		c.update(csrf(request))
+		return render_to_response("add_algorithm_implementation.html", c)
 	
 def show_classification_by_id(request, id):	
 	classification = get_classification_by_id(int(id))

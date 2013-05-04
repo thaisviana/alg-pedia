@@ -26,10 +26,6 @@ urlpatterns = patterns('',
 	url(r'^show/alg/all$', show_all_algorithms),
 	url(r'^add/alg/id/(\d+)$', display_add_implementation),
 	
-	#Peri gambiarra
-	url(r'^added/imp/alg/(\d+)/(\d+)/(.+)$', add_implementation_by_algorithm), #processes what comes from inserting the implementation
-	# alg_id / language_id / implementation /
-	
 	# serving static files in development
 	(r'^site_media/(?P<path>.*)$', 'django.views.static.serve', {'document_root' : './algorithm/static/'}),
 

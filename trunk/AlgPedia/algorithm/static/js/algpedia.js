@@ -13,7 +13,7 @@ $(function() {
 		bootbox.alert("Thank you for using AlgPedia.");
 		setTimeout(function () {
 			document.location.href = $("#logout").attr('href'); // redireciona pra url nova
-        }, 5000);
+        }, 1000);
 		
 	});	
 	$("#contact").click(function() {
