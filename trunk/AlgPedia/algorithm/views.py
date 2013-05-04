@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
 
-from algorithm.models import Classification, Implementation, Author, Algorithm, ProgrammingLanguage
+from algorithm.models import Classification, Implementation,Algorithm, ProgrammingLanguage
 from algorithm.controllers import *
 #get_all_classifications_name_link, wipe_database, is_database_empty, get_classification_by_id
 from extractor.Bootstrapping import Bootstrapper
@@ -19,7 +19,7 @@ from django.shortcuts import render_to_response
 
 
 def show_main_page(request):	
-	return HttpResponse(get_template('default_debug.html').render(Context({'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.', 'text':'OI'})))
+	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.'})))
 
 def sync_database(request):
 	sync_message = ''
@@ -66,18 +66,17 @@ def signin(request):
 
 def logout(request):
 	auth.logout(request)
-	# Redirect to a success page.
-	return HttpResponse(get_template('accounts/logout.html').render(Context({'message': 'foi?'})))
+	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'logout': True})))
 
 def about(request):
-	return HttpResponse(get_template('about.html').render(Context({'message': 'foi?'})))
+	return HttpResponse(get_template('about.html').render(Context({'logged':  request.user.is_authenticated()})))
 
 def contact(request):
-	return HttpResponse(get_template('contact.html').render(Context({'message': 'foi?'})))
+	return HttpResponse(get_template('contact.html').render(Context({'logged':  request.user.is_authenticated()})))
 	
 @login_required
 def profile(request):
-	return HttpResponse(get_template('accounts/profile.html').render(Context({'message': 'foi?'})))
+	return HttpResponse(get_template('accounts/profile.html').render(Context({'logged':  request.user.is_authenticated()})))
 
 def show_all_classifications(request):
 	return render_to_response('display_all_classifications.html', {'classifications' : get_all_classifications_name_link(), 
@@ -148,34 +147,12 @@ def display_add_algorithm(request, id):
 	
 	if request.method == 'POST':
 		form =  AlgorithmForm(request.POST)
-		print(form)
-		print(form.errors)
-		print(request.POST['name'])
-		print(request.POST['author'])
-		print(request.POST['about'])
-		print(request.POST['description'])
-		print(request.POST['classification'])
-		#if form.is_valid():
-			#print(form)
-			#new_algorithm = form.save()
-		c = dict(form=AlgorithmForm())
-		c.update(csrf(request))
-		return render_to_response('display_classification.html', c)
+		algorithm = insert_algorithm(request.POST['name'], request.POST['description'], get_classification_by_id(int(request.POST['classification'])))
+		return HttpResponseRedirect(algorithm.get_show_url())
 	else:
 		c = {'form' : AlgorithmForm(), 
 		'classif' : get_classification_by_id(int(id)), 
 		'programming_languages' : get_all_programming_languages(),
 		'logged':  request.user.is_authenticated()}
 		c.update(csrf(request))
-		return render_to_response("add_algorithm.html", c)
-
-@login_required	
-def add_algorithm_by_category(request, id, alg_name, author_name, alg_about):
-
-	#redirect to show alg by id
-	
-	algorithm = insert_algorithm_with_author(alg_name, alg_about, insert_author_by_name(author_name), get_classification_by_id(int(id)))
-	
-	return HttpResponseRedirect(algorithm.get_show_url())
-	
-	
+		return render_to_response("add_algorithm.html", c)	
