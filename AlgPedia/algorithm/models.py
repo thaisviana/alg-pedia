@@ -1,12 +1,5 @@
 from django.db import models
 
-class Author(models.Model):
-	name = models.CharField(max_length=30)
-	uri = models.URLField()
-	
-	def __unicode__(self):
-		return u'%s' %self.name.lower().title()
-
 class ProgrammingLanguage(models.Model):
 	name = models.CharField(max_length=10)
 	
@@ -26,9 +19,9 @@ class Classification(models.Model):
 class Algorithm(models.Model):
 	name = models.CharField(max_length=30)
 	description = models.TextField()
-	author = models.ForeignKey(Author, null=True, blank=True)
 	classification = models.ForeignKey(Classification, null=True, blank=True)
 	uri = models.URLField()
+	visible = models.BooleanField()
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/alg/id/%i" % self.id
@@ -41,6 +34,7 @@ class Implementation(models.Model):
 	algorithm = models.ForeignKey(Algorithm)
 	code = models.TextField()
 	programming_language = models.ForeignKey(ProgrammingLanguage)
+	visible = models.BooleanField()
 	
 	def __unicode__(self):
 		return u'%s' % self.code

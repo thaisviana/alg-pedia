@@ -15,6 +15,7 @@
 		<script type="text/javascript" src="http://localhost:8000/site_media/js/algpedia.js"></script>
 		<script type="text/javascript" src="http://localhost:8000/site_media/js/bootstrap.js"></script>
 		<script type="text/javascript" src="http://localhost:8000/site_media/js/overlib.js"></script>
+		<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
 
 		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 		<title>AlgPedia</title>
@@ -31,13 +32,14 @@
 			<li ><a href="http://localhost:8000/show/cat/all">Classifications</a></li>
 			<li ><a href="http://localhost:8000/show/alg/all">Algorithms</a></li>
 			<li ><a href="http://localhost:8000/about">About</a></li>
-			<li ><a href="http://localhost:8000/contact">Contact</a></li>
+			<!--<li ><a href="http://localhost:8000/contact" id="contact">Contact</a></li>-->
+			<li id="contact"><a>Contact</a></li>
 			{% if logged %}
-				<li ><a href="http://localhost:8000/accounts/logout">Logout</a></li>
-				<input type="hidden" id="logged" name="loged" value="true" \>	
+				<li ><a id="logout" href="http://localhost:8000/accounts/logout">Logout</a></li>
+				<input type="hidden" id="logged" name="logged" value="true" />	
 			{% else %}
 				<li ><a href="http://localhost:8000/accounts/login">Login</a></li>
-				<input type="hidden" id="logged" name="loged" value="false" \>	
+				<input type="hidden" id="logged" name="logged" value="false" />	
 			{% endif %}
 		</ul>
 		<div class="container-fluid">

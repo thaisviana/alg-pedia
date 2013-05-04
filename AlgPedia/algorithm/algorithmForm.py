@@ -5,7 +5,7 @@ from django.forms import Textarea
 class AlgorithmForm(forms.ModelForm):
 	class Meta:
 		model = Algorithm
-		fields = ('name','author','description','classification')
+		fields = ('name','description','classification')
 		widgets = {
             'description': Textarea(attrs={'cols': 240, 'rows': 10}),
         }

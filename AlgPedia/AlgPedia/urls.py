@@ -25,8 +25,8 @@ urlpatterns = patterns('',
 	url(r'^show/alg/id/(\d+)', show_algorithm_by_id),
 	url(r'^show/alg/all$', show_all_algorithms),
 	url(r'^add/alg/id/(\d+)$', display_add_implementation),
-	url(r'^added/alg/cat/(\d+)/([a-zA-z ]+)/([a-zA-z ]+)/(.+)$', add_algorithm_by_category), #processes what comes from inserting the algorithm
-	# class_id / name / author / about
+	
+	#Peri gambiarra
 	url(r'^added/imp/alg/(\d+)/(\d+)/(.+)$', add_implementation_by_algorithm), #processes what comes from inserting the implementation
 	# alg_id / language_id / implementation /
 	

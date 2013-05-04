@@ -1,19 +1,17 @@
 import os
-from algorithm.models import Classification, Implementation, Author, Algorithm, ProgrammingLanguage
+from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage
 from extractor.FileWriters import RDFWriter
 def is_database_empty():
 	empty = 0
 	
 	empty += Classification.objects.count()
 	empty += Implementation.objects.count()
-	empty += Author.objects.count()
 	empty += Algorithm.objects.count()
 	empty += ProgrammingLanguage.objects.count()
 	
 	return False if empty > 0 else True
 	
 def wipe_database():
-	Author.objects.all().delete()
 	Algorithm.objects.all().delete()
 	Classification.objects.all().delete()
 	Implementation.objects.all().delete()
@@ -70,8 +68,8 @@ def delete_algorithm_db(alg):
 		
 	return True
 
-def insert_algorithm_with_author(alg_name, alg_about, alg_author, alg_classification):
-	algorithm = Algorithm(name=alg_name, description=alg_about, author=alg_author, classification=alg_classification)
+def insert_algorithm(alg_name, alg_about,alg_classification):
+	algorithm = Algorithm(name=alg_name, description=alg_about, classification=alg_classification)
 	algorithm.save()
 	
 	return algorithm
@@ -118,14 +116,6 @@ def get_programming_language_by_id(p_lang_id):
 		return p_lang
 	except ProgrammingLanguage.DoesNotExist:
 		return None
-		
-def insert_author_by_name(author_name):
-	author, created = Author.objects.get_or_create(name=author_name.upper(), uri="http://www.google.com/?q="+author_name)		
-	
-	return author
-	
-	alg, p_lang, code
-		
 
 def get_implementations_by_alg_id(a_id):
 	try:
