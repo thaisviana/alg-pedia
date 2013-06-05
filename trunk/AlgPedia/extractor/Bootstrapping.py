@@ -76,15 +76,15 @@ class Bootstrapper():
 				print "No implementation or pseudo for this algorithm.\n"
 				return None
 				
-			alg = insert_algorithm_db(name, about, classif, alg_uri)	
+			alg = insert_algorithm_db(name, about, classif, alg_uri, True)	
 			
 			if en_implementations:
 				for en_implementation in en_implementations:
-					implementation = insert_implementation_db(alg, en_implementation[0], en_implementation[1])
+					implementation = insert_implementation_db(alg, en_implementation[0], en_implementation[1],True)
 					
 			if implementations:
 				for implementation in implementations:
-					implementation = insert_implementation_db(alg,  implementation[0], implementation[1])			
+					implementation = insert_implementation_db(alg,  implementation[0], implementation[1],True)			
 					
 			#will never be returned
 			return None 
@@ -102,7 +102,7 @@ class Bootstrapper():
 			
 			name = wiki_alg_extractor.get_alg_name()
 			
-			alg = insert_algorithm_db(name, about, classif)
+			alg = insert_algorithm_db(name, about, classif, True)
 			
 			# returns a tuple (language, implementation_source)
 			pseudos = wiki_alg_extractor.get_pseudo_code()
@@ -118,11 +118,11 @@ class Bootstrapper():
 				
 			if pseudo:
 				for pseudo in pseudos:
-					implementation = insert_implementation_db(alg, pseudo[0], pseudo[1])
+					implementation = insert_implementation_db(alg, pseudo[0], pseudo[1], True)
 					
 			if implementations:
 				for implementation in implementations:
-					implementation = insert_implementation_db(alg,  implementation[0], implementation[1])			
+					implementation = insert_implementation_db(alg,  implementation[0], implementation[1], True)			
 					
 			#will never be returned
 			return None 
