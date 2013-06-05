@@ -1,12 +1,12 @@
 $(function() {	
-	/*tinyMCE.init({
+	tinyMCE.init({
 		// General options
 		mode : "textareas",
-		plugins : "autolink,lists,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+		plugins : "",
 		
 		// Theme options
 		theme_advanced_buttons1 : "",
-	});*/
+	});
 
 	$("#logout").click(function(event) {
 		event.preventDefault();
@@ -38,7 +38,7 @@ $(function() {
 			window.location = "http://localhost:8000/add/alg/id/"+alg_id;
 		}
 	});
-	
+	$('.textarea').wysihtml5();
 	$("#add_algorithm").css( "padding-left", "+=800" );
 	$("#add_algorithm").click(function() {
 		event.preventDefault();

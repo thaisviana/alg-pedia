@@ -68,25 +68,25 @@ def delete_algorithm_db(alg):
 		
 	return True
 
-def insert_algorithm(alg_name, alg_about,alg_classification):
-	algorithm = Algorithm(name=alg_name, description=alg_about, classification=alg_classification)
+def insert_algorithm(alg_name, alg_about,alg_classification, alg_visible):
+	algorithm = Algorithm(name=alg_name, description=alg_about, classification=alg_classification, visible=alg_visible)
 	algorithm.save()
 	
 	return algorithm
 	
-def insert_algorithm_db(a_name, a_about, a_classif, a_uri):
+def insert_algorithm_db(a_name, a_about, a_classif, a_uri, a_visible):
 	
-	alg, created = Algorithm.objects.get_or_create(name=a_name, description=a_about, classification=a_classif, uri=a_uri)
+	alg, created = Algorithm.objects.get_or_create(name=a_name, description=a_about, classification=a_classif, uri=a_uri, visible=a_visible)
 	return alg	
 		
 def insert_programming_langage_db(i_language):
 	p_lang, created = ProgrammingLanguage.objects.get_or_create(name=i_language.upper())		
 	return p_lang
 		
-def insert_implementation_db(i_alg, i_language_id, i_code):
+def insert_implementation_db(i_alg, i_language_id, i_code, i_visible):
 	p_lang = insert_programming_langage_db(i_language_id)
 		
-	implementation = Implementation(algorithm=i_alg, code=i_code, programming_language=p_lang)
+	implementation = Implementation(algorithm=i_alg, code=i_code, programming_language=p_lang, visible=i_visible)
 	implementation.save()
 	
 	return implementation
@@ -104,8 +104,8 @@ def get_algorithm_by_id(a_id):
 def get_all_programming_languages():
 	return ProgrammingLanguage.objects.order_by("name")
 
-def insert_implementation_alg_p_lang(i_alg, i_p_lang, i_code):
-	imp = Implementation(algorithm=i_alg, programming_language=i_p_lang, code=i_code)
+def insert_implementation_alg_p_lang(i_alg, i_p_lang, i_code, i_visible):
+	imp = Implementation(algorithm=i_alg, programming_language=i_p_lang, code=i_code, visible=i_visible )
 	imp.save()
 	
 	return imp

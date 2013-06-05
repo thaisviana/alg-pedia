@@ -48,21 +48,20 @@ def clear_database(request):
 	return HttpResponse(html)
 	
 
-def signin(request):
+#def signin(request):
 	
-	if request.method == 'POST':
-		form =  UserForm(request.POST)
-		print("post")
-		if form.is_valid():
-			new_user = form.save()
-		c = dict(form=UserForm())
-		c.update(csrf(request))
-		return render_to_response("accounts/signin.html", c)
-	else:
-		c = dict(form=UserForm())
-		c.update(csrf(request))
-		return render_to_response("accounts/signin.html", c)
-
+#	if request.method == 'POST':
+#		form =  UserForm(request.POST)
+#		print("post")
+#		if form.is_valid():
+#			new_user = form.save()
+#		c = dict(form=UserForm())
+#		c.update(csrf(request))
+#		return render_to_response("accounts/signin.html", c)
+#	else:
+#		c = dict(form=UserForm())
+#		c.update(csrf(request))
+#		return render_to_response("accounts/signin.html", c)
 
 def logout(request):
 	auth.logout(request)
@@ -76,7 +75,10 @@ def contact(request):
 	
 @login_required
 def profile(request):
-	return HttpResponse(get_template('accounts/profile.html').render(Context({'logged':  request.user.is_authenticated()})))
+	return HttpResponse(get_template('accounts/profile.html').render(Context({'logged':  request.user.is_authenticated(), 'name' : request.user.username})))
+
+def rules(request):
+	return HttpResponse(get_template('rules.html').render(Context({'logged':  request.user.is_authenticated()})))
 
 def show_all_classifications(request):
 	return render_to_response('display_all_classifications.html', {'classifications' : get_all_classifications_name_link(), 
@@ -121,7 +123,7 @@ def display_add_implementation(request, id):
 	if request.method == 'POST':
 		algorithm = get_algorithm_by_id(int(request.POST['algorithm_id']))
 		p_lang = get_programming_language_by_id(int(request.POST['programming_languages']))
-		implementation =  insert_implementation_alg_p_lang(algorithm, p_lang, request.POST['algorithm_code'])
+		implementation =  insert_implementation_alg_p_lang(algorithm, p_lang, request.POST['algorithm_code'], False)
 		return HttpResponseRedirect(algorithm.get_show_url())
 	else:
 		c = {'logged':  request.user.is_authenticated(),'programming_languages' : get_all_programming_languages(), 'algorithm' : get_algorithm_by_id(int(id))}
@@ -144,7 +146,7 @@ def display_add_algorithm(request, id):
 	
 	if request.method == 'POST':
 		form =  AlgorithmForm(request.POST)
-		algorithm = insert_algorithm(request.POST['name'], request.POST['description'], get_classification_by_id(int(request.POST['classification'])))
+		algorithm = insert_algorithm(request.POST['name'], request.POST['description'], get_classification_by_id(int(request.POST['classification'])), False)
 		return HttpResponseRedirect(algorithm.get_show_url())
 	else:
 		c = {'form' : AlgorithmForm(), 
