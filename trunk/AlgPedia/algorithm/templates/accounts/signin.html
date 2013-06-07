@@ -1,7 +1,7 @@
 {% extends "main_template.html" %}
 {% block content %}
-	<div class="span2"></div>
-	<div id="signin" class="span4">
+	<div class="span3"></div>
+	<div id="signin" class="span9">
 	{{message}}
 		<form class="form-horizontal" action="." method="post">{% csrf_token %}
 		{{form}}

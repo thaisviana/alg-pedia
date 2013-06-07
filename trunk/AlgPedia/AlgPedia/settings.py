@@ -38,6 +38,13 @@ TIME_ZONE = 'America/Chicago'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
+
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = True
+LOCALE_PATHS = ()
+LANGUAGE_COOKIE_NAME = 'django_language'
+
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -136,6 +143,12 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
 )
 
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'me@gmail.com'
+EMAIL_HOST_PASSWORD = 'password'
+
 TEMPLATE_CONTEXT_PROCESSOR = (
  'django.contrib.auth.context_processors.auth',
  'django.core.context_processors.media',
@@ -143,6 +156,8 @@ TEMPLATE_CONTEXT_PROCESSOR = (
 )
 
 LOGIN_URL = '/accounts/login/'
+
+USE_I18N = False
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
