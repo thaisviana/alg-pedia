@@ -16,15 +16,6 @@ $(function() {
         }, 1000);
 		
 	});	
-	$("#contact").click(function() {
-		bootbox.prompt("What is your name?", function(result) {                
-		if (result === null) {                                             
-			Example.show("Prompt dismissed");                              
-		} else {
-			bootbox.alert("Hi <b>"+result+"</b>");                       
-		}
-		});
-	});
 		
 		
 	$("#add_implementation").css( "padding-left", "+=900" );

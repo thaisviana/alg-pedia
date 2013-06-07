@@ -1,5 +1,6 @@
 # Create your views here.
 from django.contrib import auth
+from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Context
 from django.template.loader import get_template
@@ -9,14 +10,15 @@ from algorithm.controllers import *
 #get_all_classifications_name_link, wipe_database, is_database_empty, get_classification_by_id
 from extractor.Bootstrapping import Bootstrapper
 from django.template import RequestContext
-from algorithm.userForm import UserForm
+from algorithm.UserCreateForm import UserCreateForm
+from algorithm.ContactForm import ContactForm
 from algorithm.algorithmForm import AlgorithmForm
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
-from django.shortcuts import render_to_response
-
+from django.shortcuts import render_to_response, render
+from django.core.mail import send_mail
 
 def show_main_page(request):	
 	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.'})))
@@ -48,20 +50,21 @@ def clear_database(request):
 	return HttpResponse(html)
 	
 
-#def signin(request):
+def signin(request):
 	
-#	if request.method == 'POST':
-#		form =  UserForm(request.POST)
-#		print("post")
-#		if form.is_valid():
-#			new_user = form.save()
-#		c = dict(form=UserForm())
-#		c.update(csrf(request))
-#		return render_to_response("accounts/signin.html", c)
-#	else:
-#		c = dict(form=UserForm())
-#		c.update(csrf(request))
-#		return render_to_response("accounts/signin.html", c)
+	if request.method == 'POST':
+		form =  UserCreateForm(request.POST)
+		if form.is_valid():
+			new_user = form.save()
+			return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated()})))
+		else:
+			c = {'logged':  request.user.is_authenticated(), 'form' : form}
+			c.update(csrf(request))
+			return render_to_response("accounts/signin.html", c)
+	else:
+		c = {'logged':  request.user.is_authenticated(), 'form' : UserCreateForm()}
+		c.update(csrf(request))
+		return render_to_response("accounts/signin.html", c)
 
 def logout(request):
 	auth.logout(request)
@@ -71,8 +74,23 @@ def about(request):
 	return HttpResponse(get_template('about.html').render(Context({'logged':  request.user.is_authenticated()})))
 
 def contact(request):
-	return HttpResponse(get_template('contact.html').render(Context({'logged':  request.user.is_authenticated()})))
-	
+	if request.method == 'POST':
+		print("Aqui")
+		recipients = ['thaisnviana@gmail.com']
+		print(request.POST['subject'])
+		print(request.POST['message'])
+		print(request.POST['sender'])
+		print(recipients)
+		try:
+			send_mail(request.POST['subject'], request.POST['message'], request.POST['sender'], recipients, fail_silently=False)
+		except BadHeaderError:
+			return HttpResponse(get_template('about.html').render(Context({'logged':  request.user.is_authenticated()})))
+		return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated()})))
+	else:
+		c = {'logged':  request.user.is_authenticated(), 'form' : ContactForm()}
+		c.update(csrf(request))
+		return render_to_response("contact.html", c)
+
 @login_required
 def profile(request):
 	return HttpResponse(get_template('accounts/profile.html').render(Context({'logged':  request.user.is_authenticated(), 'name' : request.user.username})))
