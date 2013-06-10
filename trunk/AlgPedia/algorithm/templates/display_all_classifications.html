@@ -1,14 +1,16 @@
 {% extends "main_template.html" %}
 {% block content %}
-	<div id="classifications">
-		<table class="table table-striped info" id="classifications_uri">									
+<div class="span1"></div>
+	<div id="classifications" class="span10">
+		<table class="table table-bordered" id="classifications_uri">									
 			{% for class in classifications %}	
-				<tr>
-					<td><a href="{{class.link}}"> {{ class.name }} </td>
-				</tr>
+			<tr>
+				<td><a href="{{class.link}}"> {{ class.name }} </td>
+			</tr>
 				{% empty %}
 				<p> There are no classifications available. </p>
 			{% endfor %}
 		</table>
 	</div>
+<div class="span1"></div>
 {% endblock %}
