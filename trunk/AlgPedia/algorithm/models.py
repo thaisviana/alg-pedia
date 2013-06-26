@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class ProgrammingLanguage(models.Model):
 	name = models.CharField(max_length=10)
@@ -21,7 +22,6 @@ class Algorithm(models.Model):
 	description = models.TextField()
 	classification = models.ForeignKey(Classification, null=True, blank=True)
 	uri = models.URLField()
-	visible = models.BooleanField()
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/alg/id/%i" % self.id
@@ -34,9 +34,54 @@ class Implementation(models.Model):
 	algorithm = models.ForeignKey(Algorithm)
 	code = models.TextField()
 	programming_language = models.ForeignKey(ProgrammingLanguage)
-	visible = models.BooleanField()
+	reputation = models.FloatField()
+	#user = models.ForeignKey(User, null=True, blank=True)
+	
 	def __unicode__(self):
 		return u'%s' % self.code
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/imp/id/%i" % self.id
+
+###################
+
+# Relacionamento de interesse entre usuario e uma classificacao
+class Interest(models.Model):
+	classification = models.ForeignKey(Classification)
+	user = models.ForeignKey(User)
+
+#Classe base de proeficiencia do usuario em algo
+class ProeficiencyScale(models.Model):
+	user = models.ForeignKey(User)
+	value = models.IntegerField()
+
+class ProgrammingLanguageProeficiencyScale(ProeficiencyScale):
+	programming_language = models.ForeignKey(ProgrammingLanguage)
+
+class ClassificationProeficiencyScale(ProeficiencyScale):
+	classification = models.ForeignKey(Classification)
+
+# Questao de escala em relacao a algo
+class Question(models.Model):
+	text = models.TextField()
+	priority = models.IntegerField()
+
+# Respostas validas para as perguntas
+class QuestionAnswer(models.Model):
+	question = models.ForeignKey(Question)
+	value = models.IntegerField()
+	text = models.TextField()
+
+# Pergunta em relacao ao usuario
+class UserQuestion(Question):
+	pass
+# Pergunta em relacao a uma implementacao
+class ImplementationQuestion(Question):
+	pass
+
+# Resposta de um usuario a uma determinada pergunta sobre uma determinada implementacao
+class ImplementationQuestionAnswer(models.Model):
+	user = models.ForeignKey(User)
+	implementation = models.ForeignKey(Implementation)
+	implementation_question = models.ForeignKey(ImplementationQuestion)
+	question_answer = models.ForeignKey(QuestionAnswer)
