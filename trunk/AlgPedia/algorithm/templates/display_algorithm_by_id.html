@@ -20,11 +20,14 @@
 		{% for implementation in implementations %}
 			<div class="accordion" id="accordion2">
 				<div class="accordion-group">
-					<div class="accordion-heading">
-						<a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{{implementation.id}}">
+					<div class="accordion-heading inline">
+						<a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion2" href="#collapse{{implementation.id}}">
 							{{ implementation.programming_language }}
-						</a>
+						</a><a id="add_evaluation">
+							<img id="add_evaluation " src="http://localhost:8000/site_media/images/evaluation-icon.jpeg" height="100%" alt="" />
+							</a>
 					</div>
+					
 					<div id="collapse{{implementation.id}}" class="accordion-body collapse in">
 						<div class="span2"></div>
 						<div class="accordion-inner align-center">

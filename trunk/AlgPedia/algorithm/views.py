@@ -93,7 +93,10 @@ def contact(request):
 
 @login_required
 def profile(request):
-	return HttpResponse(get_template('accounts/profile.html').render(Context({'logged':  request.user.is_authenticated(), 'name' : request.user.username})))
+	return HttpResponse(get_template('accounts/profile.html').render(Context({
+	'logged':  request.user.is_authenticated(), 
+	'name' : request.user.username,
+	'questions': get_all_userquestions()})))
 
 def rules(request):
 	return HttpResponse(get_template('rules.html').render(Context({'logged':  request.user.is_authenticated()})))
