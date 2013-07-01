@@ -22,6 +22,7 @@ class Algorithm(models.Model):
 	description = models.TextField()
 	classification = models.ForeignKey(Classification, null=True, blank=True)
 	uri = models.URLField()
+	visible = models.BooleanField()
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/alg/id/%i" % self.id
@@ -34,9 +35,7 @@ class Implementation(models.Model):
 	algorithm = models.ForeignKey(Algorithm)
 	code = models.TextField()
 	programming_language = models.ForeignKey(ProgrammingLanguage)
-	reputation = models.FloatField()
-	#user = models.ForeignKey(User, null=True, blank=True)
-	
+	visible = models.BooleanField()
 	def __unicode__(self):
 		return u'%s' % self.code
 	

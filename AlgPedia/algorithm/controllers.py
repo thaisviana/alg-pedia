@@ -1,5 +1,5 @@
 import os
-from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage
+from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage, Interest, ProeficiencyScale, ProgrammingLanguageProeficiencyScale, ClassificationProeficiencyScale, Question,QuestionAnswer,UserQuestion,ImplementationQuestion,ImplementationQuestionAnswer
 from extractor.FileWriters import RDFWriter
 def is_database_empty():
 	empty = 0
@@ -93,6 +93,12 @@ def insert_implementation_db(i_alg, i_language_id, i_code, i_visible):
 	
 def get_all_algorithms():
 	return Algorithm.objects.order_by("name")
+
+def get_all_userquestions():
+	return UserQuestion.objects.order_by("text")
+
+def get_all_implementationquestions():
+	return ImplementationQuestion.objects.order_by("text")
 	
 def get_algorithm_by_id(a_id):
 	try:

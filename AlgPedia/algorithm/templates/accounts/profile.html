@@ -1,4 +1,17 @@
 {% extends "main_template.html" %}
 {% block content %}
 	<p>Welcome, {{ name }}. Thanks for logging in.</p>
+	<table id="questions" class="table table-bordered">	
+
+			{% for question in questions %}	
+			
+				<tr>
+					<td> {{ question.text }} ? </td>
+					<td> <input type="text" id={{question.text}}></td>
+				</tr>
+				{% empty %}
+				<p> There are no question available. </p>
+			{% endfor %}		
+	</table>
+		
 {% endblock %}
