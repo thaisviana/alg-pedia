@@ -4,19 +4,20 @@
 	<table id="questions" class="table table-bordered">	
 
 	{% for question_answer in question_answers%}
-	<tr><td>
-			{{question_answer.q.text }}
-	</td></tr>
 	<tr>
+		<td>
+			{{question_answer.q.text }}
+		</td>
+		<td>
 			{% for qa in question_answer.qa %}
-			<td>
-				<input type="radio" name={{qa.text}} value={{qa.text}}> {{qa.text}}
-				
-			</td>
+				<div>
+					<input type="radio" name={{qa.text}} value={{qa.text}}> {{qa.text}}
+				</div>
 			{% endfor %}
+		</td>
 	</tr>
-		{% endfor %}
-	
+	{% endfor %}
+		
 		<tr>
 			<td> Which of these areas below do you have an interest of study ?  </td>
 			<td> 
