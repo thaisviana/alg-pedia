@@ -3,15 +3,53 @@
 	<p>Welcome, {{ name }}. Thanks for logging in.</p>
 	<table id="questions" class="table table-bordered">	
 
-			{% for question in questions %}	
-			
-				<tr>
-					<td> {{ question.text }} ? </td>
-					<td> <input type="text" id={{question.text}}></td>
-				</tr>
-				{% empty %}
-				<p> There are no question available. </p>
-			{% endfor %}		
+	{% for question_answer in question_answers%}
+	<tr><td>
+			{{question_answer.q.text }}
+	</td></tr>
+	<tr>
+			{% for qa in question_answer.qa %}
+			<td>
+				<input type="radio" name={{qa.text}} value={{qa.text}}> {{qa.text}}
+				
+			</td>
+			{% endfor %}
+	</tr>
+		{% endfor %}
+	
+		<tr>
+			<td> Which of these areas below do you have an interest of study ?  </td>
+			<td> 
+				<select name="classifications_interest" multiple>
+				{% for classification in classifications %}
+					<option value="">{{ classification.name }}</option>
+				{% endfor %}
+				</select> 
+			</td>
+		</tr>
+		
+		<tr>
+			<td> Which of these areas below do you have knowledge ?  </td>
+			<td> 
+				<select name="classifications_knowledge" multiple>
+				{% for classification in classifications %}
+					<option value="">{{ classification.name }}</option>
+				{% endfor %}
+				</select> 
+			</td>
+		</tr>
+
+		<tr>
+			<td> What programming languages do you know ?  </td>
+			<td> 
+				<select name="programming_languages" multiple>
+				{% for pl in programming_languages %}
+					<option value="">{{ pl.name }}</option>
+				{% endfor %}
+				</select> 
+			</td>
+		</tr>
+					
 	</table>
 		
 {% endblock %}
