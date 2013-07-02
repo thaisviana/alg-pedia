@@ -18,11 +18,12 @@ $(function() {
 	});	
 		
 		
-	$("#add_implementation").css( "padding-left", "+=900" );
+	//$("#add_implementation").css( "padding-left", "+=900" );
 	
-	$("#add_evaluation").css( "padding-left", "+=990" );
+	//$("#add_evaluation").css( "padding-left", "+=990" );
 		
-	$("#add_evaluation").click(function(){
+	//$("#add_evaluation").click(function(){
+	$(".add_evaluation").click(function(){
 		if($('#logged').val()== 'false'){
 			bootbox.alert("You have to login first");
 		}else{			
@@ -44,7 +45,7 @@ $(function() {
 		}
 	});
 	$('.textarea').wysihtml5();
-	$("#add_algorithm").css( "padding-left", "+=800" );
+	//$("#add_algorithm").css( "padding-left", "+=800" );
 	$("#add_algorithm").click(function() {
 		event.preventDefault();
 		if($('#logged').val()== 'false'){
@@ -68,10 +69,12 @@ $(function() {
 	$("#add_implementation").mouseout(function () {
 		return nd();
 	});
-	$("#add_evaluation").mouseover(function () {
+	//$("#add_evaluation").mouseover(function () {
+	$(".add_evaluation").mouseover(function () {
 		return overlib("Add implementation evaluation", ABOVE);
 	});
-	$("#add_evaluation").mouseout(function () {
+	//$("#add_evaluation").mouseout(function () {
+	$(".add_evaluation").mouseout(function () {
 		return nd();
 	});
 	$("#rdf").mouseover(function () {
