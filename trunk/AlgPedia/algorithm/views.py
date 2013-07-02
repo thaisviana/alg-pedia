@@ -93,9 +93,19 @@ def contact(request):
 
 @login_required
 def profile(request):
+	userquestions = get_all_userquestions()
+	question_answer = []
+	for userquestion in userquestions : 
+		print(userquestion.id)
+		question_answer.append({"q": userquestion, "qa" : get_questionaswer_by_question_id(userquestion.id)})
+		print(question_answer)
+		
 	return HttpResponse(get_template('accounts/profile.html').render(Context({
 	'logged':  request.user.is_authenticated(), 
 	'name' : request.user.username,
+	'question_answers' :  question_answer,
+	'classifications' : get_all_classifications_name_link(),
+	'programming_languages' : get_all_programming_languages(),
 	'questions': get_all_userquestions()})))
 
 def rules(request):

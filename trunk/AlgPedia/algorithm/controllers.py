@@ -1,5 +1,5 @@
 import os
-from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage, Interest, ProeficiencyScale, ProgrammingLanguageProeficiencyScale, ClassificationProeficiencyScale, Question,QuestionAnswer,UserQuestion,ImplementationQuestion,ImplementationQuestionAnswer
+from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage, Interest, ProeficiencyScale, ProgrammingLanguageProeficiencyScale, ClassificationProeficiencyScale, Question,QuestionAnswer,UserQuestion,ImplementationQuestion,ImplementationQuestionAnswer,UserQuestionAnswer
 from extractor.FileWriters import RDFWriter
 def is_database_empty():
 	empty = 0
@@ -42,7 +42,14 @@ def get_classification_by_id(c_id):
 		return classification
 	except Classification.DoesNotExist:
 		return []
-	
+		
+# returns a	user question answer by question
+def get_questionaswer_by_question_id(question_id):
+	try:
+		questionaswer = QuestionAnswer.objects.filter(question__id=question_id)
+		return questionaswer
+	except QuestionAnswer.DoesNotExist:
+		return []
 
 def get_algorithms_by_classification(a_classification):
 	try:
