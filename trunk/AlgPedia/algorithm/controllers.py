@@ -1,6 +1,8 @@
 import os
 from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage, Interest, ProeficiencyScale, ProgrammingLanguageProeficiencyScale, ClassificationProeficiencyScale, Question,QuestionAnswer,UserQuestion,ImplementationQuestion,ImplementationQuestionAnswer,UserQuestionAnswer
 from extractor.FileWriters import RDFWriter
+from django.contrib.auth.models import User
+
 def is_database_empty():
 	empty = 0
 	
@@ -17,24 +19,57 @@ def wipe_database():
 	Implementation.objects.all().delete()
 	ProgrammingLanguage.objects.all().delete()
 
-#returns a tuple (names, links) of classifications
-def get_all_classifications_name_link():
-	collection = dict()
+#returns user interested classifications
+def get_user_interested_classifications(username=None):
+	if username == None:
+		return []
 	
 	names = []
 	links = []
+	
+	user = User.objects.get(username=username)
+	user_interests = Interest.objects.filter(user=user).only("classification").order_by("classification__name")
+	
+	for interest in user_interests:
+		names.append(interest.classification.name)
+		links.append("http://localhost:8000/show/cat/id/" + str(interest.classification.id))
+		#collection[classification.name] = "http://localhost:8000/show/cat/id/" + str(classification.id)
+	
+	classif = [{'name' : t[0], 'link' : t[1]} for t in zip(names, links)]
+	
+	return classif
+
+#returns a tuple (names, links) of classifications
+def get_all_classifications_name_link():
+	#collection = dict()
+	
+	names = []
+	links = []
+	ids = []
 	
 	classifications = Classification.objects.order_by("name")
 	
 	for classification in classifications:
 		names.append(classification.name)
 		links.append("http://localhost:8000/show/cat/id/" + str(classification.id))
+		ids.append(classification.id)
 		#collection[classification.name] = "http://localhost:8000/show/cat/id/" + str(classification.id)
 	
-	classif = [{'name' : t[0], 'link' : t[1]} for t in zip(names, links)]
+	classif = [{'name' : t[0], 'link' : t[1], 'id': t[2]} for t in zip(names, links, ids)]
 	
 	return classif
 	
+def get_all_classifications_ordered_name_link(username=None):
+	all_classifications = get_all_classifications_name_link()
+	user_interested_classifications = get_user_interested_classifications(username)
+	ordered_classifications = list(user_interested_classifications)
+	
+	for classification in all_classifications:
+		if classification not in ordered_classifications:
+			ordered_classifications.append(classification)
+			
+	return ordered_classifications
+
 # returns a	classification object
 def get_classification_by_id(c_id):
 	try:
