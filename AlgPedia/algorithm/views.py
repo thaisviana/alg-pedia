@@ -95,24 +95,34 @@ def contact(request):
 def profile(request):
 	userquestions = get_all_userquestions()
 	question_answer = []
+	
+	if request.method == "POST":
+		print "DEU POST, HORA DE SALVAR!"
+		print request.POST
+	
 	for userquestion in userquestions : 
-		print(userquestion.id)
 		question_answer.append({"q": userquestion, "qa" : get_questionaswer_by_question_id(userquestion.id)})
-		print(question_answer)
-		
-	return HttpResponse(get_template('accounts/profile.html').render(Context({
-	'logged':  request.user.is_authenticated(), 
-	'name' : request.user.username,
-	'question_answers' :  question_answer,
-	'classifications' : get_all_classifications_name_link(),
-	'programming_languages' : get_all_programming_languages(),
-	'questions': get_all_userquestions()})))
+	
+	c = Context({
+		'logged':  request.user.is_authenticated(), 
+		'name' : request.user.username,
+		'question_answers' :  question_answer,
+		'classifications' : get_all_classifications_name_link(),
+		'programming_languages' : get_all_programming_languages(),
+		'questions': get_all_userquestions()})
+	
+	c.update(csrf(request))
+	
+	return HttpResponse(get_template('accounts/profile.html').render(c))
 
 def rules(request):
 	return HttpResponse(get_template('rules.html').render(Context({'logged':  request.user.is_authenticated()})))
 
 def show_all_classifications(request):
-	return render_to_response('display_all_classifications.html', {'classifications' : get_all_classifications_name_link(), 
+	username = str(request.user) if request.user.is_authenticated() else None
+	ordered_classifications = get_all_classifications_ordered_name_link(username)
+	
+	return render_to_response('display_all_classifications.html', {'classifications' : ordered_classifications,#get_all_classifications_name_link(), 
 	'logged':  request.user.is_authenticated()},context_instance=RequestContext(request))
 
 def show_all_algorithms(request):
