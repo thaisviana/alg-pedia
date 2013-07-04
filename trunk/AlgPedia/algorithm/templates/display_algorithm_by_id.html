@@ -1,8 +1,9 @@
 {% extends "main_template.html" %}
+
 {% block content %}
 
 	<h3><a href="{{ classification_algp_url }}"	target="_blank">{{algorithm_classification }}</a></h3>
-	 
+	
 	<form id="add_algorithm_form">
 		<input type="hidden" id="algorithm_id" value="{{algorithm_id}}" \>	
 		<h4>{{algorithm_name}} &nbsp;<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" id="rdf"/> </a></h4>
@@ -13,19 +14,24 @@
 			 </tr>
 		</table >
 		
-		<label class="control-label" for="inputName"><strong>Implementations :</strong><a id="add_implementation" href="http://localhost:8000/add/alg/id/{{algorithm_id}}"><img src="http://localhost:8000/site_media/images/add-button.png" height="100%" alt="" />	</a>
+		<label class="control-label" for="inputName"><strong>Implementations :</strong><a id="add_implementation" href="http://localhost:8000/add/alg/id/{{algorithm_id}}"><img src="http://localhost:8000/site_media/images/add-button.png" height="100%" alt="Add implementation" />	</a>
 		<!--<input type="button" value="Add Implementation" id="add_implementation" ></input><i class="icon-plus"></i>-->
 		</label>
 		<div>
 		{% for implementation in implementations %}
-			<div class="accordion" id="accordion2">
+			<div class="accordion" id="implementation-{{implementation.id}}">
 				<div class="accordion-group">
 					<div class="accordion-heading inline">
-						<a class="accordion-toggle"  data-toggle="collapse" data-parent="#accordion2" href="#collapse{{implementation.id}}">
-							{{ implementation.programming_language }}
-						</a><a id="add_evaluation">
-							<img id="add_evaluation " src="http://localhost:8000/site_media/images/evaluation-icon.jpeg" height="100%" alt="" />
+						<div class="accordion-heading-container">
+							<a class="accordion-toggle"  data-toggle="collapse" data-parent="#implementation{{implementation.id}}" href="#collapse{{implementation.id}}">
+								{{ implementation.programming_language }}
 							</a>
+						</div>
+						<div class="add_evaluation-container">
+							<a class="add_evaluation" id="evaluate-{{implementation.id}}">
+								<img src="http://localhost:8000/site_media/images/evaluation-icon.jpeg" height="100%" alt="" />
+							</a>
+						</div>
 					</div>
 					
 					<div id="collapse{{implementation.id}}" class="accordion-body collapse in">
@@ -47,4 +53,78 @@
 		</div>
 			
 	</form>
+	
+	<!-- Modal for add evaluation -->
+	<div id="evaluation-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="evaluation-modal-impl-plang"></h3>
+		</div>
+		<div class="modal-body">
+			<input type="hidden" name="evaluation-modal-impl-id" value="" id="evaluation-modal-impl-id" />
+			<table class="table table-bordered">
+				<tr>
+					<td>This code compiles?</td>
+					<td>
+						<div id="evaluation-modal-radiogroup">
+							<input type="radio" name="evaluation-modal-compiles" value="1">Yes<br />
+							<input type="radio" name="evaluation-modal-compiles" value="0">No
+						</div>
+					</td>
+				</tr>
+				{% for implementation_question in implementation_questions %}
+				<tr>
+					<td>{{implementation_question.text}}?</td>
+					<td>
+						<!--<input type="text" value="0" class="evaluation-modal-slider" name="evaluation-modal-{{implementation_question.q}}" />-->
+						<div class="evaluation-modal-slider">
+							<!--<input type="hidden" value="0" name="evaluation-modal-impl-question-{{implementation_question.id}}" />-->
+						</div>
+					</td>
+				</tr>
+				{% endfor %}
+			</table>
+		</div>
+		<div class="modal-footer">
+			<button id="evaluation-modal-close" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			<button id="evaluation-modal-save" class="btn btn-primary">Save changes</button>
+		</div>
+	</div>
+	<script src="/site_media/js/plugins/raty/jquery.raty.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(".evaluation-modal-slider").raty({
+								'path': '/site_media/js/plugins/raty/img',
+								'number': '5',
+								'numberMax': '5'});
+			
+			$("#evaluation-modal").on('hidden', modalHiddenHandler);
+		});
+		
+		$("#evaluation-modal-save").click(function() {
+			var params = {'implementationId': $("#evaluation-modal-impl-id").val(),
+							'compiles': $("input[name=evaluation-modal-compiles]:checked").val(),
+							'performance': $($(".evaluation-modal-slider").get(0)).raty('score'),
+							'readability': $($(".evaluation-modal-slider").get(1)).raty('score')};
+			
+			$.post("", params, function(status) {
+				if (status == "success") {
+					alert("Evaluation saved successfully!");
+				}
+				else if (status == "error") {
+					alert("There was and error when saving your evaluation...");
+				}
+			});
+		});
+		
+		function modalHiddenHandler() {
+			$(".evaluation-modal-slider").each(function() {
+				$(this).find("input").first().val(0);
+				$(this).raty('score', 0);
+			});
+			$("#evaluation-modal-radiogroup").find("input").each(function() {
+				$(this).removeAttr('checked');
+			});
+		}
+	</script>
 {% endblock %}
