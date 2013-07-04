@@ -99,24 +99,52 @@
 								'numberMax': '5'});
 			
 			$("#evaluation-modal").on('hidden', modalHiddenHandler);
-		});
 		
-		$("#evaluation-modal-save").click(function() {
-			var params = {'implementationId': $("#evaluation-modal-impl-id").val(),
-							'compiles': $("input[name=evaluation-modal-compiles]:checked").val(),
-							'performance': $($(".evaluation-modal-slider").get(0)).raty('score'),
-							'readability': $($(".evaluation-modal-slider").get(1)).raty('score')};
+		
+			$(".add_evaluation").click(function(){
+				if($('#logged').val()== 'false'){
+					bootbox.alert("You have to login first");
+				}else{			
+					/*bootbox.alert("uhuuul");
+					var form = document.forms[0];
+					var alg_id = form['algorithm_id'].value;*/
 			
-			$.post("", params, function(status) {
-				if (status == "success") {
-					alert("Evaluation saved successfully!");
-				}
-				else if (status == "error") {
-					alert("There was and error when saving your evaluation...");
+					//window.location = "http://localhost:8000/add/alg/id/"+alg_id;
+			
+					var implementationId = $(this).attr('id').split('-')[1];
+					var implementationPLanguage = $("#implementation-" + implementationId).find(".accordion-toggle").html().trim();
+			
+					$("#evaluation-modal-impl-id").val(implementationId);
+					$("#evaluation-modal-impl-plang").html(implementationPLanguage);
+			
+					$("#evaluation-modal").modal();
 				}
 			});
-		});
 		
+			$("#evaluation-modal-save").click(function() {
+				var implId = $("#evaluation-modal-impl-id").val();
+				var compiles = $("input[name=evaluation-modal-compiles]:checked").val();
+				var performance = $($(".evaluation-modal-slider").get(0)).raty('score');
+				var readability = $($(".evaluation-modal-slider").get(1)).raty('score');
+				
+				var params = {'implementationId': implId,
+								'compiles': compiles,
+								'performance': $($(".evaluation-modal-slider").get(0)).raty('score'),
+								'readability': $($(".evaluation-modal-slider").get(1)).raty('score')};
+				
+				
+				
+				//alert(params['implementationId']);
+				$.post("", params, function(status) {
+					if (status == "success") {
+						alert("Evaluation saved successfully!");
+					}
+					else if (status == "error") {
+						alert("There was and error when saving your evaluation...");
+					}
+				});
+			});
+		});
 		function modalHiddenHandler() {
 			$(".evaluation-modal-slider").each(function() {
 				$(this).find("input").first().val(0);
