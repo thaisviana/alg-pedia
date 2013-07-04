@@ -14,7 +14,6 @@ from algorithm.UserCreateForm import UserCreateForm
 from algorithm.ContactForm import ContactForm
 from algorithm.algorithmForm import AlgorithmForm
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.core.context_processors import csrf
 from django.shortcuts import render_to_response, render
@@ -93,22 +92,72 @@ def contact(request):
 
 @login_required
 def profile(request):
-	userquestions = get_all_userquestions()
-	question_answer = []
+	user_questions = get_all_userquestions()
+	question_answers = []
+	username = request.user.username
+	classifications = get_all_classifications_name_link()
+	programming_languages = get_all_programming_languages()
+	
+	for user_question in user_questions :
+		question_answers.append({"q": user_question, "qa" : get_questionaswer_by_question_id(user_question.id), "u_qa": get_userquestionanswer_by_question_id_and_user(username, user_question.id)})
+	
+	u_c_p = get_user_classifications_proeficiencies_ids(username)
+	u_c_i = get_user_classifications_interests_ids(username)
+	u_p_l_p = get_user_programming_languages_proeficiencies_ids(username)
+	
+	print u_c_p
 	
 	if request.method == "POST":
-		print "DEU POST, HORA DE SALVAR!"
-		print request.POST
-	
-	for userquestion in userquestions : 
-		question_answer.append({"q": userquestion, "qa" : get_questionaswer_by_question_id(userquestion.id)})
+		
+		#insere as respostas para as perguntas
+		for q in user_questions:
+			q_data = request.POST["profile_" + str(q.id)]
+			
+			if q_data and q_data.isdigit():
+				int_q_answer_id = int(q_data)
+				insert_user_question_answer(username, q.id, int_q_answer_id)
+		
+		
+		data = request.POST.getlist("classifications_interest")
+		ids = []
+		
+		for classification_id in data:
+			if classification_id.isdigit():
+				int_c = int(classification_id)
+				ids.append(int_c)
+		
+		#insere as classificacoes de interesse
+		insert_classifications_interests(username, ids)
+		
+		data = request.POST.getlist("classifications_knowledge")
+		ids = []
+		
+		for classification_id in data:
+			if classification_id.isdigit():
+				int_c = int(classification_id)
+				ids.append(int_c)
+		
+		insert_classifications_proeficiencies(username, ids)
+		
+		data = request.POST.getlist("programming_languages")
+		ids = []
+		
+		for programming_language_id in data:
+			if programming_language_id.isdigit():
+				int_c = int(programming_language_id)
+				ids.append(int_c)
+		
+		insert_programming_languages_proeficiencies(username, ids)
 	
 	c = Context({
-		'logged':  request.user.is_authenticated(), 
+		'logged':  request.user.is_authenticated(),
 		'name' : request.user.username,
-		'question_answers' :  question_answer,
-		'classifications' : get_all_classifications_name_link(),
-		'programming_languages' : get_all_programming_languages(),
+		'question_answers' :  question_answers,
+		'classifications' : classifications,
+		'user_classifications_interests': u_c_i,
+		'user_classification_proeficiencies' : u_c_p,
+		'user_programming_languages_proeficiencies' : u_p_l_p,
+		'programming_languages' : programming_languages,
 		'questions': get_all_userquestions()})
 	
 	c.update(csrf(request))

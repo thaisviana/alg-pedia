@@ -86,6 +86,13 @@ def get_questionaswer_by_question_id(question_id):
 	except QuestionAnswer.DoesNotExist:
 		return []
 
+def get_userquestionanswer_by_question_id_and_user(username, question_id):
+	try:
+		user_question_answer = UserQuestionAnswer.objects.get(user__username=username, user_question__id=question_id)
+		return user_question_answer.question_answer
+	except:
+		return []
+
 def get_algorithms_by_classification(a_classification):
 	try:
 		algs = Algorithm.objects.filter(classification=a_classification)
@@ -138,6 +145,70 @@ def get_all_algorithms():
 
 def get_all_userquestions():
 	return UserQuestion.objects.order_by("text")
+
+def insert_user_question_answer(username, question_id, question_answer_id):
+	user = User.objects.get(username=username)
+	
+	try:
+		question = UserQuestion.objects.get(id=question_id)
+		question_answer = QuestionAnswer.objects.get(id=question_answer_id)
+		UserQuestionAnswer.objects.get_or_create(user=user, user_question=question, question_answer=question_answer)
+	except UserQuestionAnswer.DoesNotExist:
+		pass
+
+def get_user_programming_languages_proeficiencies_ids(username):
+	try:
+		pls = []
+		
+		for pl in ProgrammingLanguageProeficiencyScale.objects.filter(user__username=username):
+			pls.append(pl.id)
+		
+		return pls
+	except ProgrammingLanguageProeficiencyScale.DoesNotExist:
+		return []
+
+def get_user_classifications_interests_ids(username):
+	try:
+		classifications = []
+		
+		for i in Interest.objects.filter(user__username=username):
+			classifications.append(i.classification.id)
+		
+		return classifications
+	except Interest.DoesNotExist:
+		return []
+
+def get_user_classifications_proeficiencies_ids(username):
+	try:
+		classifications = []
+		
+		for cps in ClassificationProeficiencyScale.objects.filter(user__username=username):
+			classifications.append(cps.classification.id)
+		
+		return classifications
+	except ClassificationProeficiencyScale.DoesNotExist:
+		return []
+
+def insert_programming_languages_proeficiencies(username, programming_languages_ids):
+	user = User.objects.get(username=username)
+	
+	for programming_language_id in programming_languages_ids:
+		programming_language = ProgrammingLanguage.objects.get(id=programming_language_id)
+		ProgrammingLanguageProeficiencyScale.objects.get_or_create(user=user, programming_language=programming_language, value=1)
+
+def insert_classifications_proeficiencies(username, classifications_ids):
+	user = User.objects.get(username=username)
+	
+	for classification_id in classifications_ids:
+		classification = Classification.objects.get(id=classification_id)
+		ClassificationProeficiencyScale.objects.get_or_create(user=user, classification=classification, value=1)
+
+def insert_classifications_interests(username, classifications_ids):
+	user = User.objects.get(username=username)
+	
+	for classification_id in classifications_ids:
+		classification = Classification.objects.get(id=classification_id)
+		Interest.objects.get_or_create(user=user, classification=classification)
 
 def get_all_implementationquestions():
 	return ImplementationQuestion.objects.order_by("text")
