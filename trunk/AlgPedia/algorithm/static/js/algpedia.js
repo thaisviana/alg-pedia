@@ -23,17 +23,6 @@ $(function() {
 	//$("#add_evaluation").css( "padding-left", "+=990" );
 		
 	//$("#add_evaluation").click(function(){
-	$(".add_evaluation").click(function(){
-		if($('#logged').val()== 'false'){
-			bootbox.alert("You have to login first");
-		}else{			
-			bootbox.alert("uhuuul");
-			var form = document.forms[0];
-			var alg_id = form['algorithm_id'].value;	
-			
-			//window.location = "http://localhost:8000/add/alg/id/"+alg_id;
-		}
-	});
 	
 	$("#add_implementation").click(function(){
 		if($('#logged').val()== 'false'){
