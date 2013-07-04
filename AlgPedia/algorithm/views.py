@@ -102,13 +102,6 @@ def profile(request):
 	for user_question in user_questions :
 		question_answers.append({"q": user_question, "qa" : get_questionaswer_by_question_id(user_question.id), "u_qa": get_userquestionanswer_by_question_id_and_user(username, user_question.id)})
 	
-	# Recupero todas as classificacoes e linguagens de programacao que o usuario e proeficiente
-	u_c_p = get_user_classifications_proeficiencies_ids(username)
-	u_p_l_p = get_user_programming_languages_proeficiencies_ids(username)
-	
-	# Recupero todas as classificacoes que o usuario tem interesse
-	u_c_i = get_user_classifications_interests_ids(username)
-	
 	if request.method == "POST":
 		
 		# Insere as respostas para as perguntas
@@ -131,7 +124,8 @@ def profile(request):
 				ids.append(int_c)
 		
 		# Insere as classificacoes de interesse
-		insert_classifications_interests(username, ids)
+		update_classifications_interests(username, ids)
+		#insert_classifications_interests(username, ids)
 		
 		data = request.POST.getlist("classifications_knowledge")
 		ids = []
@@ -141,7 +135,8 @@ def profile(request):
 				int_c = int(classification_id)
 				ids.append(int_c)
 		
-		insert_classifications_proeficiencies(username, ids)
+		update_classifications_proeficiencies(username, ids)
+		#insert_classifications_proeficiencies(username, ids)
 		
 		data = request.POST.getlist("programming_languages")
 		ids = []
@@ -152,7 +147,15 @@ def profile(request):
 				ids.append(int_c)
 		
 		# Insere as linguagens de programcao que o usuario e proeficiente
-		insert_programming_languages_proeficiencies(username, ids)
+		update_programming_languages_proeficiencies(username, ids)
+		#insert_programming_languages_proeficiencies(username, ids)
+	
+	# Recupero todas as classificacoes e linguagens de programacao que o usuario e proeficiente
+	u_c_p = get_user_classifications_proeficiencies_ids(username)
+	u_p_l_p = get_user_programming_languages_proeficiencies_ids(username)
+	
+	# Recupero todas as classificacoes que o usuario tem interesse
+	u_c_i = get_user_classifications_interests_ids(username)
 	
 	c = Context({
 		'logged':  request.user.is_authenticated(),

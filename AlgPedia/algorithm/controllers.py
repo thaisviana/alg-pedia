@@ -172,8 +172,8 @@ def get_user_programming_languages_proeficiencies_ids(username):
 	try:
 		pls = []
 		
-		for pl in ProgrammingLanguageProeficiencyScale.objects.filter(user__username=username):
-			pls.append(pl.id)
+		for pl in ProgrammingLanguageProeficiencyScale.objects.filter(user__username=username).only("programming_language"):
+			pls.append(pl.programming_language.id)
 		
 		return pls
 	except ProgrammingLanguageProeficiencyScale.DoesNotExist:
@@ -183,7 +183,7 @@ def get_user_classifications_interests_ids(username):
 	try:
 		classifications = []
 		
-		for i in Interest.objects.filter(user__username=username):
+		for i in Interest.objects.filter(user__username=username).only("classification"):
 			classifications.append(i.classification.id)
 		
 		return classifications
@@ -194,12 +194,29 @@ def get_user_classifications_proeficiencies_ids(username):
 	try:
 		classifications = []
 		
-		for cps in ClassificationProeficiencyScale.objects.filter(user__username=username):
+		for cps in ClassificationProeficiencyScale.objects.filter(user__username=username).only("classification"):
 			classifications.append(cps.classification.id)
 		
 		return classifications
 	except ClassificationProeficiencyScale.DoesNotExist:
 		return []
+
+def update_programming_languages_proeficiencies(username, programming_languages_ids):
+	user_proeficiencies = set(get_user_programming_languages_proeficiencies_ids(username))
+	programming_languages_ids = set(programming_languages_ids)
+	
+	#Vou remover todas as existentes menos as que ele selecionou
+	to_remove = user_proeficiencies - programming_languages_ids
+	to_insert = programming_languages_ids - user_proeficiencies
+	
+	ProgrammingLanguageProeficiencyScale.objects.filter(user__username=username, programming_language__id__in=to_remove).delete()
+	
+	#print "programming_language!"
+	#print "to remove: ", to_remove
+	#print "to_insert: ", to_insert
+	
+	if to_insert:
+		insert_programming_languages_proeficiencies(username, to_insert)
 
 def insert_programming_languages_proeficiencies(username, programming_languages_ids):
 	user = User.objects.get(username=username)
@@ -208,12 +225,45 @@ def insert_programming_languages_proeficiencies(username, programming_languages_
 		programming_language = ProgrammingLanguage.objects.get(id=programming_language_id)
 		ProgrammingLanguageProeficiencyScale.objects.get_or_create(user=user, programming_language=programming_language, value=1)
 
+def update_classifications_proeficiencies(username, classifications_ids):
+	user_proeficiencies = set(get_user_classifications_proeficiencies_ids(username))
+	classifications_ids = set(classifications_ids)
+	
+	#Vou remover todas as existentes menos as que ele selecionou
+	to_remove = user_proeficiencies - classifications_ids
+	to_insert = classifications_ids - user_proeficiencies
+	
+	#print "proeficiencies!"
+	#print "to remove: ", to_remove
+	#print "to_insert: ", to_insert
+	
+	ClassificationProeficiencyScale.objects.filter(user__username=username, classification__id__in=to_remove).delete()
+	
+	if to_insert:
+		insert_classifications_proeficiencies(username, to_insert)
+
 def insert_classifications_proeficiencies(username, classifications_ids):
 	user = User.objects.get(username=username)
 	
 	for classification_id in classifications_ids:
 		classification = Classification.objects.get(id=classification_id)
 		ClassificationProeficiencyScale.objects.get_or_create(user=user, classification=classification, value=1)
+
+def update_classifications_interests(username, classifications_ids):
+	user_interests = set(get_user_classifications_interests_ids(username))
+	classifications_ids = set(classifications_ids)
+	
+	to_remove = user_interests - classifications_ids
+	to_insert = classifications_ids - user_interests
+	
+	#print "interests!"
+	#print "to remove: ", to_remove
+	#print "to_insert: ", to_insert
+	
+	Interest.objects.filter(user__username=username, classification__id__in=to_remove).delete()
+	
+	if to_insert:
+		insert_classifications_interests(username, to_insert)
 
 def insert_classifications_interests(username, classifications_ids):
 	user = User.objects.get(username=username)
