@@ -184,7 +184,7 @@ def show_all_classifications(request):
 	ordered_classifications = get_all_classifications_ordered_name_link(username)
 	
 	return render_to_response('display_all_classifications.html', {'classifications' : ordered_classifications,#get_all_classifications_name_link(), 
-	'logged':  request.user.is_authenticated()},context_instance=RequestContext(request))
+	'logged':  request.user.is_authenticated(),'user_interested_classifications': get_user_interested_classifications(username)},context_instance=RequestContext(request))
 
 def show_all_algorithms(request):
 	algorithms = get_all_algorithms()

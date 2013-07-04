@@ -101,7 +101,7 @@
 				var data = self.serialize() + '&ajax-request=1';
 				
 				var completeHandler = function(data, status, jqXHR) {
-					alert('Saved !');
+					bootbox.alert("Profile saved!");
 				};
 				
 				$.post(self.attr('action'), data).done(completeHandler);

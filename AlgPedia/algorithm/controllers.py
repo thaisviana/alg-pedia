@@ -62,8 +62,8 @@ def get_all_classifications_name_link():
 def get_all_classifications_ordered_name_link(username=None):
 	all_classifications = get_all_classifications_name_link()
 	user_interested_classifications = get_user_interested_classifications(username)
-	ordered_classifications = list(user_interested_classifications)
-	
+	#ordered_classifications = list(user_interested_classifications)
+	ordered_classifications = []
 	for classification in all_classifications:
 		if classification not in ordered_classifications:
 			ordered_classifications.append(classification)
