@@ -74,6 +74,12 @@ class QuestionAnswer(models.Model):
 # Pergunta em relacao ao usuario
 class UserQuestion(Question):
 	pass
+	
+class UserQuestionAnswer(models.Model):
+	user = models.ForeignKey(User)
+	user_question = models.ForeignKey(UserQuestion)
+	question_answer = models.ForeignKey(QuestionAnswer)
+	
 # Pergunta em relacao a uma implementacao
 class ImplementationQuestion(Question):
 	pass
