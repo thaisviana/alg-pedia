@@ -191,6 +191,8 @@ def show_all_algorithms(request):
 def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
+	implementationquestions = get_all_implementationquestions()
+	
 	classification = alg.classification
 	
 	# Try and create an rdf file for the required algorithm
@@ -209,6 +211,7 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['rdf_path'] = rdf_path
 	ctx_variables['implementations'] = get_implementations_by_alg_id(int(id))
 	ctx_variables['logged'] = request.user.is_authenticated()
+	ctx_variables['implementation_questions'] = implementationquestions
 	
 	return HttpResponse(get_template('display_algorithm_by_id.html').render(Context(ctx_variables)))
 
