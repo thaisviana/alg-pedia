@@ -151,8 +151,20 @@ def insert_user_question_answer(username, question_id, question_answer_id):
 	
 	try:
 		question = UserQuestion.objects.get(id=question_id)
+		existing_question_answer = UserQuestionAnswer.objects.get(user=user, user_question=question)
+		
+		if question_answer_id and existing_question_answer.question_answer.id != question_answer_id:
+				question_answer = QuestionAnswer.objects.get(id=question_answer_id)
+				existing_question_answer.question_answer = question_answer
+				existing_question_answer.save()
+	except UserQuestionAnswer.DoesNotExist:
 		question_answer = QuestionAnswer.objects.get(id=question_answer_id)
-		UserQuestionAnswer.objects.get_or_create(user=user, user_question=question, question_answer=question_answer)
+		UserQuestionAnswer.objects.create(user=user, user_question=question, question_answer=question_answer)
+
+def delete_user_question_answer(username, question_id):
+	try:
+		existing_question_answer = UserQuestionAnswer.objects.get(user__username=username, user_question__id=question_id)
+		existing_question_answer.delete()
 	except UserQuestionAnswer.DoesNotExist:
 		pass
 
