@@ -115,10 +115,12 @@ def profile(request):
 		for q in user_questions:
 			q_data = request.POST["profile_" + str(q.id)]
 			
-			if q_data and q_data.isdigit():
-				int_q_answer_id = int(q_data)
-				insert_user_question_answer(username, q.id, int_q_answer_id)
-		
+			if q_data: 
+				if q_data.isdigit():
+					int_q_answer_id = int(q_data)
+					insert_user_question_answer(username, q.id, int_q_answer_id)
+			else:
+				delete_user_question_answer(username, q.id)
 		
 		data = request.POST.getlist("classifications_interest")
 		ids = []
