@@ -198,7 +198,11 @@ def show_all_algorithms(request):
 def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
+	impl_question_answers = []
 	implementationquestions = get_all_implementationquestions()
+	
+	for implementation_question in implementationquestions :
+		impl_question_answers.append({"i_q": implementation_question, "i_q_a" : get_questionaswer_by_question_id(implementation_question.id)})
 	
 	classification = alg.classification
 	
@@ -218,7 +222,7 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['rdf_path'] = rdf_path
 	ctx_variables['implementations'] = get_implementations_by_alg_id(int(id))
 	ctx_variables['logged'] = request.user.is_authenticated()
-	ctx_variables['implementation_questions'] = implementationquestions
+	ctx_variables['impl_question_answers'] = impl_question_answers
 	
 	return HttpResponse(get_template('display_algorithm_by_id.html').render(Context(ctx_variables)))
 

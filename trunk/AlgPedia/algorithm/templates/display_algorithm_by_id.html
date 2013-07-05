@@ -6,7 +6,7 @@
 	
 	<form id="add_algorithm_form">
 		<input type="hidden" id="algorithm_id" value="{{algorithm_id}}" \>	
-		<h4>{{algorithm_name}} &nbsp;<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" id="rdf"/> </a></h4>
+		<h4><span id="algorithm-name">{{algorithm_name}}</span> &nbsp;<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" id="rdf"/> </a></h4>
 		<table class="table table-condensed info">
 			 <tr>
 				<td> <label class="control-label" for="inputName"> About:</label> </td>
@@ -63,22 +63,15 @@
 		<div class="modal-body">
 			<input type="hidden" name="evaluation-modal-impl-id" value="" id="evaluation-modal-impl-id" />
 			<table class="table table-bordered">
+				{% for iqa in impl_question_answers %}
 				<tr>
-					<td>This code compiles?</td>
+					<td>{{iqa.i_q.text}}?</td>
 					<td>
-						<div id="evaluation-modal-radiogroup">
-							<input type="radio" name="evaluation-modal-compiles" value="1">Yes<br />
-							<input type="radio" name="evaluation-modal-compiles" value="0">No
-						</div>
-					</td>
-				</tr>
-				{% for implementation_question in implementation_questions %}
-				<tr>
-					<td>{{implementation_question.text}}?</td>
-					<td>
-						<!--<input type="text" value="0" class="evaluation-modal-slider" name="evaluation-modal-{{implementation_question.q}}" />-->
-						<div class="evaluation-modal-slider">
-							<!--<input type="hidden" value="0" name="evaluation-modal-impl-question-{{implementation_question.id}}" />-->
+						<div class="evaluation-modal-radiogroup" id="evaluation-modal-question-{{iqa.i_q.id}}">
+							<input type="hidden" class="impl-question" value="{{iqa.i_q.id}}" />
+						{% for iqa2 in iqa.i_q_a %}
+							<input type="radio" name="evaluation-modal-{{iqa.i_q.id}}" value="{{iqa2.value}}" />{{iqa2.text}}
+						{% endfor %}
 						</div>
 					</td>
 				</tr>
@@ -93,64 +86,77 @@
 	<script src="/site_media/js/plugins/raty/jquery.raty.min.js" type="text/javascript"></script>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$(".evaluation-modal-slider").raty({
-								'path': '/site_media/js/plugins/raty/img',
-								'number': '5',
-								'numberMax': '5'});
-			
 			$("#evaluation-modal").on('hidden', modalHiddenHandler);
-		
-		
+			
 			$(".add_evaluation").click(function(){
 				if($('#logged').val()== 'false'){
 					bootbox.alert("You have to login first");
-				}else{			
-					/*bootbox.alert("uhuuul");
-					var form = document.forms[0];
-					var alg_id = form['algorithm_id'].value;*/
-			
-					//window.location = "http://localhost:8000/add/alg/id/"+alg_id;
-			
+				}
+				else {
 					var implementationId = $(this).attr('id').split('-')[1];
 					var implementationPLanguage = $("#implementation-" + implementationId).find(".accordion-toggle").html().trim();
+					var algorithmName = $("#algorithm-name").html();
 			
 					$("#evaluation-modal-impl-id").val(implementationId);
-					$("#evaluation-modal-impl-plang").html(implementationPLanguage);
+					$("#evaluation-modal-impl-plang").html(algorithmName + "in " + implementationPLanguage);
 			
 					$("#evaluation-modal").modal();
 				}
 			});
-		
+			
 			$("#evaluation-modal-save").click(function() {
 				var implId = $("#evaluation-modal-impl-id").val();
-				var compiles = $("input[name=evaluation-modal-compiles]:checked").val();
-				var performance = $($(".evaluation-modal-slider").get(0)).raty('score');
-				var readability = $($(".evaluation-modal-slider").get(1)).raty('score');
 				
-				var params = {'implementationId': implId,
-								'compiles': compiles,
-								'performance': $($(".evaluation-modal-slider").get(0)).raty('score'),
-								'readability': $($(".evaluation-modal-slider").get(1)).raty('score')};
+				var questions = new Array();
+				var radiogroups = $(".evaluation-modal-radiogroup");
 				
+				var validated = true;
 				
-				
-				//alert(params['implementationId']);
-				$.post("", params, function(status) {
-					if (status == "success") {
-						alert("Evaluation saved successfully!");
+				for (var i = 0; i < radiogroups.length; i++) {
+					var id = $(radiogroups[i]).find(".impl-question").val();
+					var answer = $(radiogroups[i]).find("input[type=radio]:checked").val();
+					
+					if (answer == null || answer == undefined) {
+						validated = false;
+						break;
 					}
-					else if (status == "error") {
-						alert("There was and error when saving your evaluation...");
-					}
-				});
+					
+					questions.push(new question(id, answer));
+				}
+				
+				if (validated) {
+					var params = new implementation(implId, questions);
+					
+					console.log(params);
+					// Fazer a parte do AJAX
+					/*$.post("", params, function(status) {
+						if (status == "success") {
+							alert("Evaluation saved successfully!");
+						}
+						else if (status == "error") {
+							alert("There was and error when saving your evaluation...");
+						}
+					});*/
+				}
+				else {
+					alert("Please, fill the fields correctly!");
+				}
 			});
 		});
+		
+		function question(id, answer) {
+			this.id = id;
+			this.answer = answer;
+		}
+		
+		function implementation(id, questions) {
+			this.id = id;
+			this.questions = questions;
+		}
+		
 		function modalHiddenHandler() {
-			$(".evaluation-modal-slider").each(function() {
-				$(this).find("input").first().val(0);
-				$(this).raty('score', 0);
-			});
-			$("#evaluation-modal-radiogroup").find("input").each(function() {
+			$("#evaluation-modal-impl-id").val(-1);
+			$(".evaluation-modal-radiogroup").find("input[type=radio]").each(function() {
 				$(this).removeAttr('checked');
 			});
 		}
