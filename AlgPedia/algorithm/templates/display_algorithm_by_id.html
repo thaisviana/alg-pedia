@@ -4,7 +4,7 @@
 	<h3><a href="{{ classification_algp_url }}"	target="_blank">{{algorithm_classification }}</a></h3>
 	
 	<form id="add_algorithm_form">
-		<input type="hidden" id="algorithm_id" value="{{algorithm_id}}" \>	
+		<input type="hidden" id="algorithm_id" value="{{algorithm_id}}" />	
 		<h4><span id="algorithm-name">{{algorithm_name}}</span> &nbsp;<a href="http://localhost:8000/site_media/{{rdf_path}}" target="_blank"> <img style="width: 20px; height:20px" src="http://localhost:8000/site_media/images/rdf.jpeg" id="rdf"/> </a></h4>
 		<table class="table table-condensed info">
 			 <tr>
@@ -55,11 +55,13 @@
 	
 	<!-- Modal for add evaluation -->
 	<div id="evaluation-modal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<!--<form class="form-horizontal" method="post" id="add_evaluation_form">{% csrf_token %}-->
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 			<h3 id="evaluation-modal-impl-plang"></h3>
 		</div>
 		<div class="modal-body">
+			{% csrf_token %}
 			<input type="hidden" name="evaluation-modal-impl-id" value="" id="evaluation-modal-impl-id" />
 			<table class="table table-bordered">
 				{% for iq in impl_question_answers %}
@@ -82,15 +84,8 @@
 			<button id="evaluation-modal-close" class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
 			<button id="evaluation-modal-save" class="btn btn-primary">Save changes</button>
 		</div>
+		<!--</form>-->
 	</div>
-	<style type="text/css">
-		.label-correction {
-			display: inline;
-			position: relative;
-			top: 4px;
-			padding-right: 5px;
-		}
-	</style>
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#evaluation-modal").on('hidden', modalHiddenHandler);
@@ -113,37 +108,41 @@
 			
 			$("#evaluation-modal-save").click(function() {
 				var implId = $("#evaluation-modal-impl-id").val();
+				var radiogroups = $(".evaluation-modal-radiogroup");
+				var token = $("input[name=csrfmiddlewaretoken]").val();
 				
 				var questions = new Array();
-				var radiogroups = $(".evaluation-modal-radiogroup");
-				
 				var validated = true;
 				
 				for (var i = 0; i < radiogroups.length; i++) {
 					var id = $(radiogroups[i]).find(".impl-question").val();
-					var answer = $(radiogroups[i]).find("input[type=radio]:checked").val();
+					var answerId = $(radiogroups[i]).find("input[type=radio]:checked").attr('id').split("-")[2];
 					
-					if (answer == null || answer == undefined) {
+					if (answerId == null || answerId == undefined) {
 						validated = false;
 						break;
 					}
 					
-					questions.push(new question(id, answer));
+					questions.push(new questionAnswer(id, answerId));
 				}
 				
-				if (validated) {
-					var params = new implementation(implId, questions);
+				if (token != null && token != undefined && token != "" && validated) {
+					var params = new implementationVote(token, implId, JSON.stringify(questions));
+					var url = "./" + $("#algorithm_id").val();
 					
-					console.log(params);
-					// Fazer a parte do AJAX
-					/*$.post("", params, function(status) {
+					//console.log(params);
+					
+					$.post(url, params, function(status) {
+						//console.log(status);
 						if (status == "success") {
-							alert("Evaluation saved successfully!");
+							bootbox.alert("Evaluation saved successfully!");
 						}
 						else if (status == "error") {
-							alert("There was and error when saving your evaluation...");
+							bootbox.alert("There was and error when saving your evaluation...");
 						}
-					});*/
+					});
+					
+					$("#evaluation-modal").modal('hide');
 				}
 				else {
 					alert("Please, fill the fields correctly!");
@@ -151,13 +150,14 @@
 			});
 		});
 		
-		function question(id, answer) {
+		function questionAnswer(id, answerId) {
 			this.id = id;
-			this.answer = answer;
+			this.answerId = answerId;
 		}
 		
-		function implementation(id, questions) {
-			this.id = id;
+		function implementationVote(token, implId, questions) {
+			this.csrfmiddlewaretoken = token;
+			this.implId = implId;
 			this.questions = questions;
 		}
 		

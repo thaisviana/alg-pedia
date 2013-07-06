@@ -19,6 +19,8 @@ from django.core.context_processors import csrf
 from django.shortcuts import render_to_response, render
 from django.core.mail import send_mail
 
+import json
+
 def show_main_page(request):	
 	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.'})))
 
@@ -206,6 +208,21 @@ def show_algorithm_by_id(request, id):
 	
 	classification = alg.classification
 	
+	# Reading request to insert the vote of an user for a specific implementation
+	if request.method == "POST":
+		username = request.user.username
+		impl_id = int(request.POST['implId'])
+		
+		questions = json.loads(request.POST['questions'])
+		
+		for iq in questions:
+			question_id = int(iq[u'id'])
+			question_answer = int(iq[u'answerId'])
+			
+			insert_user_impl_question_answer(username, impl_id, question_id, question_answer)
+		
+		return HttpResponse('success')
+	
 	# Try and create an rdf file for the required algorithm
 	# returns the name of the file so we can show it later
 	rdf_path = try_create_algorithm_rdf(int(id))
@@ -223,6 +240,8 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['implementations'] = get_implementations_by_alg_id(int(id))
 	ctx_variables['logged'] = request.user.is_authenticated()
 	ctx_variables['impl_question_answers'] = impl_question_answers
+	
+	ctx_variables.update(csrf(request))
 	
 	return HttpResponse(get_template('display_algorithm_by_id.html').render(Context(ctx_variables)))
 

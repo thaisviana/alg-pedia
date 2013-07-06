@@ -168,6 +168,24 @@ def delete_user_question_answer(username, question_id):
 	except UserQuestionAnswer.DoesNotExist:
 		pass
 
+def insert_user_impl_question_answer(username, impl_id, question_id, question_answer_id):
+	user = User.objects.get(username=username)
+	
+	try:
+		question = ImplementationQuestion.objects.get(id=question_id)
+		existing_question_answer = ImplementationQuestionAnswer.objects.get(user=user, implementation=impl_id, implementation_question=question_id)
+		
+		if question_answer_id and existing_question_answer.question_answer.id != question_answer_id:
+				question_answer = QuestionAnswer.objects.get(id=question_answer_id)
+				existing_question_answer.question_answer = question_answer
+				existing_question_answer.save()
+	except ImplementationQuestionAnswer.DoesNotExist:
+		implementation = Implementation.objects.get(id=impl_id)
+		implementation_question = ImplementationQuestion.objects.get(id=question_id)
+		question_answer = QuestionAnswer.objects.get(id=question_answer_id)
+		
+		ImplementationQuestionAnswer.objects.create(user=user, implementation=implementation, implementation_question=implementation_question, question_answer=question_answer)
+
 def get_user_programming_languages_proeficiencies_ids(username):
 	try:
 		pls = []
