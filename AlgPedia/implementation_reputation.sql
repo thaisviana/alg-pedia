@@ -2,7 +2,7 @@ DELIMITER $$
 
 DROP PROCEDURE IF EXISTS calculate_user_evaluation_contribution_support$$
 
-CREATE PROCEDURE calculate_user_evaluation_contribution_support(IN implementation_id INT(11), IN user_id INT(11), OUT ct INT(11), OUT pt INT(11)) proc_label:
+CREATE PROCEDURE calculate_user_evaluation_contribution_support(IN implementation_id INT(11), IN user_id INT(11), OUT ct INT(11), OUT pt INT(11))
 BEGIN
 	SELECT cic + ccc + cclp + IF(cp IS NULL, 0, cp) + IF(cai IS NULL, 0, cai) ct,
 	qpt + 11 _div
@@ -97,9 +97,9 @@ BEGIN
 	UPDATE algorithm_usercontribution SET val=(ct/pt) WHERE id = contribution_id;
 END$$
 
-DROP FUNCTION IF EXISTS calculate_implementation_reputation$$
+DROP PROCEDURE IF EXISTS calculate_implementation_reputation$$
 
-CREATE FUNCTION calculate_implementation_reputation(implementation_id INT(11)) RETURNS DOUBLE
+CREATE PROCEDURE calculate_implementation_reputation(implementation_id INT(11))
 BEGIN
 	DECLARE sum DOUBLE;
 	DECLARE impl_id INT(11);
@@ -108,7 +108,9 @@ BEGIN
 
 	SELECT sum(val) INTO sum FROM algorithm_usercontribution WHERE implementation_id = impl_id;
 
-	RETURN sum;
+	UPDATE algorithm_implementation SET reputation = sum WHERE id = impl_id;
+
+	SELECT sum;
 END$$
 
 DELIMITER ;
