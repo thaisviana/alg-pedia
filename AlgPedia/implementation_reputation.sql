@@ -4,6 +4,13 @@ DROP PROCEDURE IF EXISTS calculate_user_evaluation_contribution_support$$
 
 CREATE PROCEDURE calculate_user_evaluation_contribution_support(IN implementation_id INT(11), IN user_id INT(11), OUT ct INT(11), OUT pt INT(11))
 BEGIN
+
+	DECLARE impl_id INT(11);
+	DECLARE u_id INT(11);
+
+	SET impl_id = implementation_id;
+	SET u_id = user_id;
+
 	SELECT cic + ccc + cclp + IF(cp IS NULL, 0, cp) + IF(cai IS NULL, 0, cai) ct,
 	qpt + 11 _div
 	INTO ct, pt
@@ -42,8 +49,22 @@ BEGIN
 		) qpt # Soma de todas os pesos de todas as perguntas
 		FROM auth_user u, algorithm_implementation impl
 		INNER JOIN algorithm_algorithm a ON a.id = impl.algorithm_id
-		WHERE u.id = @user_id AND impl.id = @impl_id
+		WHERE u.id = u_id AND impl.id = impl_id
 	) a;
+END$$
+
+DROP PROCEDURE IF EXISTS calculate_implementation_reputation$$
+
+CREATE PROCEDURE calculate_implementation_reputation(implementation_id INT(11))
+BEGIN
+	DECLARE sum DOUBLE;
+	DECLARE impl_id INT(11);
+	
+	SET impl_id = implementation_id;
+
+	SELECT sum(val)/count(1) INTO sum FROM algorithm_usercontribution WHERE implementation_id = impl_id;
+
+	UPDATE algorithm_implementation SET reputation = sum WHERE id = impl_id;
 END$$
 
 DROP PROCEDURE IF EXISTS calculate_user_evaluation_contribution$$
@@ -58,10 +79,12 @@ BEGIN
 	DECLARE last_op VARCHAR(32);
 
 	IF NOT EXISTS(select 1 from algorithm_implementation i where i.id = implementation_id) THEN
+		SELECT 'No Implementation';
 		LEAVE proc_label;
 	END IF;
 
 	IF NOT EXISTS(select 1 from auth_user u where u.id = user_id) THEN
+		SELECT 'No User';
 		LEAVE proc_label;
 	END IF;
 
@@ -80,6 +103,7 @@ BEGIN
 	CALL calculate_user_evaluation_contribution_support(impl_id, u_id, ct, pt);
 
 	IF ct IS NULL OR pt IS NULL THEN
+		SELECT 'No CT or PT';
 		LEAVE proc_label;
 	END IF;
 
@@ -95,22 +119,10 @@ BEGIN
 	END IF;
 
 	UPDATE algorithm_usercontribution SET val=(ct/pt) WHERE id = contribution_id;
-END$$
 
-DROP PROCEDURE IF EXISTS calculate_implementation_reputation$$
+	CALL calculate_implementation_reputation(impl_id);
 
-CREATE PROCEDURE calculate_implementation_reputation(implementation_id INT(11))
-BEGIN
-	DECLARE sum DOUBLE;
-	DECLARE impl_id INT(11);
-	
-	SET impl_id = implementation_id;
-
-	SELECT sum(val) INTO sum FROM algorithm_usercontribution WHERE implementation_id = impl_id;
-
-	UPDATE algorithm_implementation SET reputation = sum WHERE id = impl_id;
-
-	SELECT sum;
+	SELECT 'Done';
 END$$
 
 DELIMITER ;
