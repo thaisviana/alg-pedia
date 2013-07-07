@@ -2,6 +2,7 @@ import os
 from algorithm.models import Classification, Implementation, Algorithm, ProgrammingLanguage, Interest, ProeficiencyScale, ProgrammingLanguageProeficiencyScale, ClassificationProeficiencyScale, Question,QuestionAnswer,UserQuestion,ImplementationQuestion,ImplementationQuestionAnswer,UserQuestionAnswer
 from extractor.FileWriters import RDFWriter
 from django.contrib.auth.models import User
+from django.db import connection
 
 def is_database_empty():
 	empty = 0
@@ -168,12 +169,17 @@ def delete_user_question_answer(username, question_id):
 	except UserQuestionAnswer.DoesNotExist:
 		pass
 
+def exec_sp_update_user_evaluation_contribution(implementation_id, user_id):
+	cursor = connection.cursor()
+	cursor.callproc('calculate_user_evaluation_contribution', (implementation_id, user_id))
+	cursor.close()
+
 def insert_user_impl_question_answer(username, impl_id, question_id, question_answer_id):
 	user = User.objects.get(username=username)
 	
 	try:
 		question = ImplementationQuestion.objects.get(id=question_id)
-		existing_question_answer = ImplementationQuestionAnswer.objects.get(user=user, implementation=impl_id, implementation_question=question_id)
+		existing_question_answer = ImplementationQuestionAnswer.objects.get(user=user, implementation__id=impl_id, implementation_question=question)
 		
 		if question_answer_id and existing_question_answer.question_answer.id != question_answer_id:
 				question_answer = QuestionAnswer.objects.get(id=question_answer_id)
@@ -181,10 +187,11 @@ def insert_user_impl_question_answer(username, impl_id, question_id, question_an
 				existing_question_answer.save()
 	except ImplementationQuestionAnswer.DoesNotExist:
 		implementation = Implementation.objects.get(id=impl_id)
-		implementation_question = ImplementationQuestion.objects.get(id=question_id)
 		question_answer = QuestionAnswer.objects.get(id=question_answer_id)
 		
-		ImplementationQuestionAnswer.objects.create(user=user, implementation=implementation, implementation_question=implementation_question, question_answer=question_answer)
+		ImplementationQuestionAnswer.objects.create(user=user, implementation=implementation, implementation_question=question, question_answer=question_answer)
+		
+	exec_sp_update_user_evaluation_contribution(impl_id, user.id)
 
 def get_user_programming_languages_proeficiencies_ids(username):
 	try:
