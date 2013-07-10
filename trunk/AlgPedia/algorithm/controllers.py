@@ -325,11 +325,8 @@ def get_programming_language_by_id(p_lang_id):
 
 def get_implementations_by_alg_id(a_id):
 	try:
-		alg = Algorithm.objects.get(id=a_id)
-		implementations = Implementation.objects.filter(algorithm=alg)
-
+		implementations = Implementation.objects.filter(algorithm__id=a_id).order_by("-reputation")
 		return implementations
-		
 	except Algorithm.DoesNotExist:
 		return []
 

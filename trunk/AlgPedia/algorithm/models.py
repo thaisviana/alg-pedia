@@ -36,6 +36,8 @@ class Implementation(models.Model):
 	code = models.TextField()
 	programming_language = models.ForeignKey(ProgrammingLanguage)
 	visible = models.BooleanField()
+	reputation = models.FloatField()
+	
 	def __unicode__(self):
 		return u'%s' % self.code
 	
@@ -90,9 +92,3 @@ class ImplementationQuestionAnswer(models.Model):
 	implementation = models.ForeignKey(Implementation)
 	implementation_question = models.ForeignKey(ImplementationQuestion)
 	question_answer = models.ForeignKey(QuestionAnswer)
-
-class UserQuestionAnswer(models.Model):
-	user = models.ForeignKey(User)
-	user_question = models.ForeignKey(UserQuestion)
-	question_answer = models.ForeignKey(QuestionAnswer)
-
