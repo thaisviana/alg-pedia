@@ -21,8 +21,8 @@ from django.core.mail import send_mail
 
 import json
 
-def show_main_page(request):	
-	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.'})))
+def show_main_page(request):
+	return HttpResponse(get_template('default_debug.html').render(Context({'logged':  request.user.is_authenticated(),'message' : 'Welcome to AlgPedia - the free encyclopedia that anyone can edit.', 'top5_algorithms' : get_top5_algorithms()})))
 
 def sync_database(request):
 	sync_message = ''
@@ -184,9 +184,12 @@ def rules(request):
 def show_all_classifications(request):
 	username = str(request.user) if request.user.is_authenticated() else None
 	ordered_classifications = get_all_classifications_ordered_name_link(username)
+	user_interested_classifications = get_user_interested_classifications(username)
+	
+	ordered_classifications = dict_diff(ordered_classifications, user_interested_classifications)
 	
 	return render_to_response('display_all_classifications.html', {'classifications' : ordered_classifications,#get_all_classifications_name_link(), 
-	'logged':  request.user.is_authenticated(),'user_interested_classifications': get_user_interested_classifications(username)},context_instance=RequestContext(request))
+	'logged':  request.user.is_authenticated(),'user_interested_classifications': user_interested_classifications},context_instance=RequestContext(request))
 
 def show_all_algorithms(request):
 	algorithms = get_all_algorithms()
@@ -264,9 +267,13 @@ def show_classification_by_id(request, id):
 	algs_names = map(lambda alg: alg.name, algs)
 	
 	algs = [{'name' : t[0], 'link' : t[1]} for t in zip(algs_names, [get_algorithm_display_url().replace('#',str(id)) for id in map(lambda alg: alg.id, algs)])]
+	
+	top5_algs = get_top5_algorithms_by_classification(classification)
 			
 	return HttpResponse(get_template('display_classification.html').render(Context({'classif' : classification, 
-	'algorithms' : algs,
+	'top5_algorithms' : top5_algs,
+	#'algorithms' : algs,
+	'algorithms' : dict_diff(algs, top5_algs),
 	'logged':  request.user.is_authenticated()})))
 
 @login_required

@@ -100,7 +100,7 @@ def get_algorithms_by_classification(a_classification):
 		return algs
 	except Algorithm.DoesNotExist:
 		return []
-		
+
 def insert_classification_db(c_name, c_uri):
 	try:
 		classif = Classification.objects.get(name=c_name)
@@ -330,6 +330,43 @@ def get_implementations_by_alg_id(a_id):
 	except Algorithm.DoesNotExist:
 		return []
 
+def get_top5_algorithms():
+	try:
+		algorithms = Algorithm.objects.filter(reputation__isnull=False).order_by("-reputation")[0:5]
+		#algorithms = Algorithm.objects.order_by("-reputation")[0:5]
+		algs = [ (alg.get_show_url(), alg.name) for alg in algorithms]
+		algorithms = [{'link' : a[0], 'name' : a[1]} for a in algs]
+		return algorithms
+	except Algorithm.DoesNotExist:
+		return []
+
+def get_top5_algorithms_by_classification(a_classification):
+	try:
+		algorithms = Algorithm.objects.filter(classification=a_classification, reputation__isnull=False).order_by("-reputation")[0:5]
+		#algorithms = Algorithm.objects.filter(classification=a_classification).order_by("-reputation")[0:5]
+		algs = [ (alg.get_show_url(), alg.name) for alg in algorithms]
+		algorithms = [{'link' : a[0], 'name' : a[1]} for a in algs]
+		return algorithms
+	except Algorithm.DoesNotExist:
+		return []
+
+# Returns a dict with the difference between the two dicts
+def dict_diff(list1, list2):
+	rest = []
+	
+	for d in list1:
+		has_element = False
+		
+		for dd in list2:
+			if dd['name'] == d['name']:
+				has_element = True
+				break
+		
+		if not has_element:
+			rest.append(d)
+	
+	return rest
+
 def try_create_algorithm_rdf(a_id):
 
 	base_path = os.path.dirname(__file__)
@@ -348,7 +385,7 @@ def try_create_algorithm_rdf(a_id):
 		file_name = '/'.join(file_parts[-2:])
 		
 	return file_name
-		
+
 def make_classification_link(c_id):
 	#base_link = get_classification_display_url()
 	#return base_link.replace("#", c_id)
