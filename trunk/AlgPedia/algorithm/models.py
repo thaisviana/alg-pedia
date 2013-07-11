@@ -23,6 +23,7 @@ class Algorithm(models.Model):
 	classification = models.ForeignKey(Classification, null=True, blank=True)
 	uri = models.URLField()
 	visible = models.BooleanField()
+	reputation = models.FloatField()
 	
 	def get_show_url(self):
 		return "http://localhost:8000/show/alg/id/%i" % self.id

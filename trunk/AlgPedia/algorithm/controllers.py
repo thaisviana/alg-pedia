@@ -96,7 +96,7 @@ def get_userquestionanswer_by_question_id_and_user(username, question_id):
 
 def get_algorithms_by_classification(a_classification):
 	try:
-		algs = Algorithm.objects.filter(classification=a_classification)
+		algs = Algorithm.objects.filter(classification=a_classification).order_by("-reputation")
 		return algs
 	except Algorithm.DoesNotExist:
 		return []
