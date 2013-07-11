@@ -59,12 +59,18 @@ CREATE PROCEDURE calculate_implementation_reputation(implementation_id INT(11))
 BEGIN
 	DECLARE sum DOUBLE;
 	DECLARE impl_id INT(11);
-	
+	DECLARE alg_id INT(11);
+
 	SET impl_id = implementation_id;
 
 	SELECT sum(val)/count(1) INTO sum FROM algorithm_usercontribution WHERE implementation_id = impl_id;
+	SELECT algorithm_id INTO alg_id FROM algorithm_implementation where id = impl_id;
 
 	UPDATE algorithm_implementation SET reputation = sum WHERE id = impl_id;
+
+	SELECT SUM(reputation) INTO sum FROM algorithm_implementation WHERE algorithm_id = alg_id;
+
+	UPDATE algorithm_algorithm SET reputation = sum WHERE id = alg_id;
 END$$
 
 DROP PROCEDURE IF EXISTS calculate_user_evaluation_contribution$$
