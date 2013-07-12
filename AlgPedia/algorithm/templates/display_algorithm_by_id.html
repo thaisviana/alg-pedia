@@ -71,7 +71,7 @@
 						<div class="evaluation-modal-radiogroup" id="evaluation-modal-question-{{iq.i_q.id}}">
 							<input type="hidden" class="impl-question" value="{{iq.i_q.id}}" />
 						{% for iqa in iq.i_q_a %}
-							<input type="radio" name="evaluation-modal-{{ iq.i_q.id}}" id="evaluation-modal-{{iqa.id}}" value="{{iqa.value}}" />
+							<input type="radio" name="evaluation-modal-{{iq.i_q.id}}" id="evaluation-modal-{{iqa.id}}" value="{{iqa.value}}" />
 							<label for="evaluation-modal-{{iqa.id}}" class="label-correction">{{iqa.text}}</label>
 						{% endfor %}
 						</div>
@@ -86,8 +86,20 @@
 		</div>
 		<!--</form>-->
 	</div>
+	
+	<div id="user-votes">
+		{% for uv in user_votes %}
+		<div class="user-vote" id="uv-impl-{{uv.iq}}">
+			{% for iqa in uv.iqa %}
+			<input type="hidden" id="uv-iq-{{iqa.implementation_question_id}}" value="{{iqa.question_answer_id}}" />
+			{% endfor %}
+		</div>
+		{% endfor %}
+	</div>
+	
 	<script type="text/javascript">
 		$(document).ready(function() {
+			$("#evaluation-modal").on('show', modalShowHandler);
 			$("#evaluation-modal").on('hidden', modalHiddenHandler);
 			
 			$(".add_evaluation").click(function(){
@@ -95,7 +107,7 @@
 					bootbox.alert("You have to login first");
 				}
 				else {
-					var implementationId = $(this).attr('id').split('-')[1];
+					var implementationId = $(this).attr('id').split('-').pop();
 					var implementationPLanguage = $("#implementation-" + implementationId).find(".accordion-toggle").html().trim();
 					var algorithmName = $("#algorithm-name").html();
 					
@@ -106,7 +118,9 @@
 				}
 			});
 			
+			// Save the vote for the implementation
 			$("#evaluation-modal-save").click(function() {
+				// Implementation ID, answers and token are needed 
 				var implId = $("#evaluation-modal-impl-id").val();
 				var radiogroups = $(".evaluation-modal-radiogroup");
 				var token = $("input[name=csrfmiddlewaretoken]").val();
@@ -116,17 +130,20 @@
 				
 				for (var i = 0; i < radiogroups.length; i++) {
 					var id = $(radiogroups[i]).find(".impl-question").val();
-					var answerId = $(radiogroups[i]).find("input[type=radio]:checked").attr('id').split("-")[2];
+					var answerId = $(radiogroups[i]).find("input[type=radio]:checked");
 					
-					if (answerId == null || answerId == undefined) {
+					if (answerId.size() == 0) {
 						validated = false;
 						break;
 					}
+					
+					answerId = answerId.attr('id').split("-").pop();
 					
 					questions.push(new questionAnswer(id, answerId));
 				}
 				
 				if (token != null && token != undefined && token != "" && validated) {
+					// JS Object with a JSON of question anwsers
 					var params = new implementationVote(token, implId, JSON.stringify(questions));
 					var url = "./" + $("#algorithm_id").val();
 					
@@ -161,10 +178,33 @@
 			this.questions = questions;
 		}
 		
+		function modalShowHandler() {
+			var implId = $("#evaluation-modal-impl-id").val();
+			var answers = $("#uv-impl-" + implId);
+			var radios = $(".evaluation-modal-radiogroup");
+			var questionVal = null;
+			var question = null;
+			var answer = null;
+			var answerVal = null;
+			
+			if (answers.size() != 0) {
+				answers = answers.find("input[type=hidden]");
+				
+				for (var i = 0; i < answers.size(); i++) {
+					answer = $(answers[i]);
+					questionVal = answer.attr('id').split('-').pop();
+					answerVal = answer.val();
+					question = $("#evaluation-modal-question-" + questionVal);
+					
+					$("#evaluation-modal-" + answerVal).prop("checked", true);
+				}
+			}
+		}
+		
 		function modalHiddenHandler() {
 			$("#evaluation-modal-impl-id").val(-1);
 			$(".evaluation-modal-radiogroup").find("input[type=radio]").each(function() {
-				$(this).removeAttr('checked');
+				$(this).removeAttr("checked");
 			});
 		}
 	</script>

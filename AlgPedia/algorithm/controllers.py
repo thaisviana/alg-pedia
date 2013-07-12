@@ -193,6 +193,26 @@ def insert_user_impl_question_answer(username, impl_id, question_id, question_an
 		
 	exec_sp_update_user_evaluation_contribution(impl_id, user.id)
 
+def get_user_votes_by_algorithm(username, algorithm_id):
+	user = User.objects.get(username=username)
+	algorithm = Algorithm.objects.get(id=algorithm_id)
+	
+	try:
+		#impl_questions = ImplementationQuestion.objects.get()
+		implementations = Implementation.objects.filter(algorithm=algorithm)
+		impl_question_answers = []
+		
+		for impl in implementations:
+			impl_question_answers.append({"iq" : int(impl.id), "iqa" : ImplementationQuestionAnswer.objects.filter(user=user, implementation=impl)})
+		
+		if len(impl_question_answers) == 0:
+			return []
+		
+		return impl_question_answers
+		
+	except ImplementationQuestionAnswer.DoesNotExist:
+		return []
+
 def get_user_programming_languages_proeficiencies_ids(username):
 	try:
 		pls = []
