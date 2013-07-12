@@ -186,11 +186,13 @@
 			var question = null;
 			var answer = null;
 			var answerVal = null;
-			
+			//console.log(answers.size());
 			if (answers.size() != 0) {
+				$("#evaluation-modal-save").prop("disabled", true);
 				answers = answers.find("input[type=hidden]");
 				
 				for (var i = 0; i < answers.size(); i++) {
+					//console.log($(answers[i]));
 					answer = $(answers[i]);
 					questionVal = answer.attr('id').split('-').pop();
 					answerVal = answer.val();
@@ -198,6 +200,9 @@
 					
 					$("#evaluation-modal-" + answerVal).prop("checked", true);
 				}
+			}
+			else {
+				$("#evaluation-modal-save").prop("disabled", false);
 			}
 		}
 		
