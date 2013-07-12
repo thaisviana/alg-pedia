@@ -203,7 +203,10 @@ def get_user_votes_by_algorithm(username, algorithm_id):
 		impl_question_answers = []
 		
 		for impl in implementations:
-			impl_question_answers.append({"iq" : int(impl.id), "iqa" : ImplementationQuestionAnswer.objects.filter(user=user, implementation=impl)})
+			answer = ImplementationQuestionAnswer.objects.filter(user=user, implementation=impl)
+			
+			if answer:
+				impl_question_answers.append({"iq" : int(impl.id), "iqa" : ImplementationQuestionAnswer.objects.filter(user=user, implementation=impl)})
 		
 		if len(impl_question_answers) == 0:
 			return []
