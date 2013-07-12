@@ -210,10 +210,11 @@ def show_algorithm_by_id(request, id):
 	for implementation_question in implementationquestions :
 		impl_question_answers.append({"i_q": implementation_question, "i_q_a" : get_questionaswer_by_question_id(implementation_question.id)})
 	
-	user_votes = get_user_votes_by_algorithm(request.user.username, int(id))
-	
-	for uv in user_votes:
-		print uv
+	user_votes = []
+	username = request.user.username
+	# Only get the user votes when the user is logged in
+	if username != '':
+		user_votes = get_user_votes_by_algorithm(username, int(id))
 	
 	
 	classification = alg.classification
