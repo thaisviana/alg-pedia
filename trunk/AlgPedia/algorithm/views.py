@@ -204,10 +204,17 @@ def show_algorithm_by_id(request, id):
 	alg = get_algorithm_by_id(int(id))
 	
 	impl_question_answers = []
-	implementationquestions = get_all_implementationquestions()
 	
+	implementationquestions = get_all_implementationquestions()
+
 	for implementation_question in implementationquestions :
 		impl_question_answers.append({"i_q": implementation_question, "i_q_a" : get_questionaswer_by_question_id(implementation_question.id)})
+	
+	user_votes = get_user_votes_by_algorithm(request.user.username, int(id))
+	
+	for uv in user_votes:
+		print uv
+	
 	
 	classification = alg.classification
 	
@@ -243,6 +250,7 @@ def show_algorithm_by_id(request, id):
 	ctx_variables['implementations'] = get_implementations_by_alg_id(int(id))
 	ctx_variables['logged'] = request.user.is_authenticated()
 	ctx_variables['impl_question_answers'] = impl_question_answers
+	ctx_variables['user_votes'] = user_votes
 	
 	ctx_variables.update(csrf(request))
 	
