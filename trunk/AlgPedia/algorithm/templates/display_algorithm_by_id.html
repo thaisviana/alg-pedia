@@ -144,15 +144,16 @@
 				
 				if (token != null && token != undefined && token != "" && validated) {
 					// JS Object with a JSON of question anwsers
-					var params = new implementationVote(token, implId, JSON.stringify(questions));
+					window.userVote = new implementationVote(token, implId, JSON.stringify(questions));
 					var url = "./" + $("#algorithm_id").val();
 					
 					//console.log(params);
 					
-					$.post(url, params, function(status) {
+					$.post(url, window.userVote, function(status) {
 						//console.log(status);
 						if (status == "success") {
 							bootbox.alert("Evaluation saved successfully!");
+							updateVotesDiv();
 						}
 						else if (status == "error") {
 							bootbox.alert("There was and error when saving your evaluation...");
@@ -211,6 +212,25 @@
 			$(".evaluation-modal-radiogroup").find("input[type=radio]").each(function() {
 				$(this).removeAttr("checked");
 			});
+		}
+    
+    function updateVotesDiv() {
+			var implId = window.userVote.implId;
+			var questions = JSON.parse(window.userVote.questions);
+			var recentVote = '<div class="user-vote" id="uv-impl-' + implId + '">';
+			var qi = null;
+			var qa = null;
+			
+			for (var i = 0; i < questions.length; i++) {
+				qi = questions[i].id;
+				qa = questions[i].answerId;
+				recentVote += '<input type="hidden" id="uv-iq-' + qi + '" value="' + qa + '" />';
+			}
+			
+			recentVote += '</div>';
+			
+			$("#user-votes").append(recentVote);
+			window.userVote = null;
 		}
 	</script>
 {% endblock %}
