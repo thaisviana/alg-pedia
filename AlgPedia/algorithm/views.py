@@ -224,6 +224,7 @@ def show_algorithm_by_id(request, id):
 		username = request.user.username
 		impl_id = int(request.POST['implId'])
 		
+		# Parsing JSON with questions ids and answers
 		questions = json.loads(request.POST['questions'])
 		
 		for iq in questions:
