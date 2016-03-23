@@ -1,0 +1,1 @@
+AlgPedia is a tool to visualize LOD extracted properties of Algorithms in a more human-friendly way.
